@@ -16,6 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { Wallet } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { useAuthStore } from '@/stores/auth-store'
+import { formatQuota } from '@/lib/format'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -26,7 +30,6 @@ import { Search } from '@/components/search'
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import { type TopNavLink } from '../types'
 import { Header } from './header'
-import { SystemBrand } from './system-brand'
 import { TopNav } from './top-nav'
 
 /**
@@ -102,9 +105,11 @@ export function AppHeader({
   showConfigDrawer = true,
   showProfileDropdown = true,
 }: AppHeaderProps) {
+  const { t } = useTranslation()
   // Prioritize dynamically generated links from backend
   const dynamicLinks = useTopNavLinks()
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  const quota = useAuthStore((state) => state.auth.user?.quota)
 
   // Notifications hook
   const notifications = useNotifications()
@@ -112,10 +117,8 @@ export function AppHeader({
   return (
     <>
       <Header>
-        <SystemBrand variant='inline' />
-
         {leftContent ? (
-          <div className='ms-2 flex items-center'>{leftContent}</div>
+          <div className='flex min-w-0 items-center'>{leftContent}</div>
         ) : null}
 
         {rightContent ?? (
@@ -126,6 +129,7 @@ export function AppHeader({
               </div>
             )}
             {showSearch && <Search />}
+            <BalancePill label={t('Balance')} quota={quota} />
             {showNotifications && (
               <NotificationPopover
                 open={notifications.popoverOpen}
@@ -145,5 +149,19 @@ export function AppHeader({
         )}
       </Header>
     </>
+  )
+}
+
+function BalancePill(props: { label: string; quota?: number }) {
+  if (props.quota == null || !Number.isFinite(props.quota)) return null
+
+  return (
+    <div className='border-border/70 bg-card text-card-foreground shadow-soft hidden h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium tabular-nums sm:inline-flex'>
+      <Wallet className='text-primary size-3.5 shrink-0' aria-hidden='true' />
+      <span className='text-muted-foreground hidden lg:inline'>
+        {props.label}
+      </span>
+      <span>{formatQuota(props.quota)}</span>
+    </div>
   )
 }

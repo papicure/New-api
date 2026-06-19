@@ -146,6 +146,18 @@ For commercial licensing, please contact support@quantumnous.com
   scrollbar-width: none; /* Firefox */
 }
 
+@utility shadow-soft {
+  box-shadow:
+    0 1px 3px color-mix(in oklch, var(--foreground) 8%, transparent),
+    0 8px 24px -12px color-mix(in oklch, var(--foreground) 18%, transparent);
+}
+
+@utility shadow-soft-lg {
+  box-shadow:
+    0 2px 8px color-mix(in oklch, var(--foreground) 10%, transparent),
+    0 18px 42px -18px color-mix(in oklch, var(--foreground) 24%, transparent);
+}
+
 /* Tooltip content can still scroll, but should not show a distracting axis. */
 [data-slot='tooltip-content'],
 [data-slot='tooltip-content'] * {
@@ -486,11 +498,10 @@ For commercial licensing, please contact support@quantumnous.com
   @media (min-width: 641px) {
     [data-slot='card']:not([data-card-hover='false']):hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.06);
-    }
-
-    .dark [data-slot='card']:not([data-card-hover='false']):hover {
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.3);
+      box-shadow:
+        0 1px 3px color-mix(in oklch, var(--foreground) 8%, transparent),
+        0 10px 28px -14px
+          color-mix(in oklch, var(--foreground) 22%, transparent);
     }
   }
 

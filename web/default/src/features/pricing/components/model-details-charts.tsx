@@ -52,12 +52,12 @@ function getChartThemeTokens(resolvedTheme: string) {
   return {
     textColor:
       resolvedTheme === 'dark'
-        ? 'rgba(255, 255, 255, 0.68)'
-        : 'rgba(15, 23, 42, 0.58)',
+        ? 'color-mix(in oklch, var(--foreground) 72%, transparent)'
+        : 'color-mix(in oklch, var(--foreground) 58%, transparent)',
     gridColor:
       resolvedTheme === 'dark'
-        ? 'rgba(255, 255, 255, 0.12)'
-        : 'rgba(15, 23, 42, 0.12)',
+        ? 'color-mix(in oklch, var(--foreground) 14%, transparent)'
+        : 'color-mix(in oklch, var(--foreground) 12%, transparent)',
   }
 }
 
@@ -115,7 +115,7 @@ export function LatencyTrendChart(props: {
       smooth: true,
       point: {
         visible: true,
-        style: { size: 5, stroke: '#ffffff', lineWidth: 1.5 },
+        style: { size: 5, stroke: 'var(--background)', lineWidth: 1.5 },
       },
       line: {
         style: { lineWidth: 2 },
@@ -222,13 +222,13 @@ export function UptimeTrendChart(props: {
       yField: 'uptime',
       smooth: true,
       line: {
-        style: { stroke: '#10b981', lineWidth: 2 },
+        style: { stroke: 'var(--success)', lineWidth: 2 },
       },
       point: {
         visible: true,
         style: {
           size: 5,
-          stroke: '#ffffff',
+          stroke: 'var(--background)',
           lineWidth: 1.5,
           fill: (datum: { uptime: number }) => getSuccessRateColor(datum.uptime),
         },
@@ -344,7 +344,7 @@ export function ThroughputBarChart(props: {
       yField: 'group',
       bar: {
         style: {
-          fill: '#6366f1',
+          fill: 'var(--chart-1)',
           ...(barRadius == null ? {} : { cornerRadius: barRadius }),
         },
       },

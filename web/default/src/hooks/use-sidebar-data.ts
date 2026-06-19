@@ -18,7 +18,9 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import {
   Activity,
+  BookOpen,
   Box,
+  Code2,
   CreditCard,
   FileText,
   FlaskConical,
@@ -28,6 +30,7 @@ import {
   MessageSquare,
   Radio,
   Settings,
+  Trophy,
   Ticket,
   User,
   Users,
@@ -48,24 +51,8 @@ export function useSidebarData(): SidebarData {
   return {
     navGroups: [
       {
-        id: 'chat',
-        title: t('Chat'),
-        items: [
-          {
-            title: t('Playground'),
-            url: '/playground',
-            icon: FlaskConical,
-          },
-          {
-            title: t('Chat'),
-            icon: MessageSquare,
-            type: 'chat-presets',
-          },
-        ],
-      },
-      {
-        id: 'general',
-        title: t('General'),
+        id: 'overview',
+        title: t('Overview'),
         items: [
           {
             title: t('Overview'),
@@ -76,6 +63,22 @@ export function useSidebarData(): SidebarData {
             title: t('Dashboard'),
             url: '/dashboard/models',
             icon: LayoutDashboard,
+          },
+        ],
+      },
+      {
+        id: 'develop',
+        title: t('Develop'),
+        items: [
+          {
+            title: t('Playground'),
+            url: '/playground',
+            icon: FlaskConical,
+          },
+          {
+            title: t('Chat'),
+            icon: MessageSquare,
+            type: 'chat-presets',
           },
           {
             title: t('API Keys'),
@@ -97,8 +100,8 @@ export function useSidebarData(): SidebarData {
         ],
       },
       {
-        id: 'personal',
-        title: t('Personal'),
+        id: 'account',
+        title: t('Account'),
         items: [
           {
             title: t('Wallet'),
@@ -114,7 +117,7 @@ export function useSidebarData(): SidebarData {
       },
       {
         id: 'admin',
-        title: t('Admin'),
+        title: t('System'),
         items: [
           {
             title: t('Channels'),
@@ -146,6 +149,27 @@ export function useSidebarData(): SidebarData {
             url: '/system-settings/site',
             activeUrls: ['/system-settings'],
             icon: Settings,
+          },
+        ],
+      },
+      {
+        id: 'guide',
+        title: t('Guide'),
+        items: [
+          {
+            title: t('Pricing'),
+            url: '/pricing',
+            icon: Code2,
+          },
+          {
+            title: t('Rankings'),
+            url: '/rankings',
+            icon: Trophy,
+          },
+          {
+            title: t('About'),
+            url: '/about',
+            icon: BookOpen,
           },
         ],
       },

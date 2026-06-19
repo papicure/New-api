@@ -63,11 +63,11 @@ export function NavGroup({ title, items }: NavGroupProps) {
   const href = useLocation({ select: (location) => location.href })
 
   return (
-    <SidebarGroup className='px-2 py-1'>
-      <SidebarGroupLabel className='text-muted-foreground/70 px-2 text-[11px] font-medium tracking-wider uppercase'>
+    <SidebarGroup className='px-2 py-1.5'>
+      <SidebarGroupLabel className='px-2 text-[11px] font-semibold text-sidebar-foreground/55 uppercase'>
         {title}
       </SidebarGroupLabel>
-      <SidebarMenu>
+      <SidebarMenu className='gap-1'>
         {items.map((item) => {
           const key = `${item.title}-${item.url || item.type}`
 
@@ -235,8 +235,8 @@ function SidebarMenuCollapsedDropdown({
                 key={`${sub.title}-${sub.url}`}
                 render={
                   <Link
-                    to={sub.url}
-                    className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
+                  to={sub.url}
+                    className={`${checkIsActive(href, sub) ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}`}
                   />
                 }
               >

@@ -21,12 +21,18 @@ For commercial licensing, please contact support@quantumnous.com
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress'
 import { cn } from '@/lib/utils'
 
+type ProgressTone = 'default' | 'success' | 'warning' | 'destructive' | 'info'
+type ProgressProps = ProgressPrimitive.Root.Props & {
+  tone?: ProgressTone
+}
+
 function Progress({
   className,
   children,
   value,
+  tone = 'default',
   ...props
-}: ProgressPrimitive.Root.Props) {
+}: ProgressProps) {
   return (
     <ProgressPrimitive.Root
       value={value}
@@ -36,7 +42,7 @@ function Progress({
     >
       {children}
       <ProgressTrack>
-        <ProgressIndicator />
+        <ProgressIndicator tone={tone} />
       </ProgressTrack>
     </ProgressPrimitive.Root>
   )
@@ -57,12 +63,21 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
 
 function ProgressIndicator({
   className,
+  tone = 'default',
   ...props
-}: ProgressPrimitive.Indicator.Props) {
+}: ProgressPrimitive.Indicator.Props & { tone?: ProgressTone }) {
+  const toneClassName = {
+    default: 'bg-primary',
+    success: 'bg-success',
+    warning: 'bg-warning',
+    destructive: 'bg-destructive',
+    info: 'bg-info',
+  }[tone]
+
   return (
     <ProgressPrimitive.Indicator
       data-slot='progress-indicator'
-      className={cn('bg-primary h-full transition-all', className)}
+      className={cn('h-full transition-all', toneClassName, className)}
       {...props}
     />
   )

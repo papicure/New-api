@@ -19,7 +19,6 @@ For commercial licensing, please contact support@quantumnous.com
 import { type ColumnDef } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
 import { formatQuota, formatTimestamp } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -41,10 +40,12 @@ import {
 import { type User } from '../types'
 import { DataTableRowActions } from './data-table-row-actions'
 
-function getQuotaProgressColor(percentage: number): string {
-  if (percentage <= 10) return '[&_[data-slot=progress-indicator]]:bg-rose-500'
-  if (percentage <= 30) return '[&_[data-slot=progress-indicator]]:bg-amber-500'
-  return '[&_[data-slot=progress-indicator]]:bg-emerald-500'
+function getQuotaProgressTone(
+  percentage: number
+): 'success' | 'warning' | 'destructive' {
+  if (percentage <= 10) return 'destructive'
+  if (percentage <= 30) return 'warning'
+  return 'success'
 }
 
 export function useUsersColumns(): ColumnDef<User>[] {
@@ -199,7 +200,8 @@ export function useUsersColumns(): ColumnDef<User>[] {
               </div>
               <Progress
                 value={percentage}
-                className={cn('h-1.5', getQuotaProgressColor(percentage))}
+                tone={getQuotaProgressTone(percentage)}
+                className='h-1.5'
               />
             </TooltipTrigger>
             <TooltipContent>

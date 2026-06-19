@@ -61,28 +61,27 @@ export function getSuccessRateLevel(rate: number): SuccessRateLevel {
 }
 
 const SUCCESS_RATE_TEXT_CLASS: Record<SuccessRateLevel, string> = {
-  excellent: 'text-emerald-600 dark:text-emerald-400',
-  good: 'text-emerald-500 dark:text-emerald-300',
-  warning: 'text-amber-600 dark:text-amber-400',
-  critical: 'text-red-600 dark:text-red-400',
+  excellent: 'text-success',
+  good: 'text-success/80',
+  warning: 'text-warning',
+  critical: 'text-destructive',
   unknown: 'text-muted-foreground',
 }
 
 const SUCCESS_RATE_DOT_CLASS: Record<SuccessRateLevel, string> = {
-  excellent: 'bg-emerald-500',
-  good: 'bg-emerald-400',
-  warning: 'bg-amber-500',
-  critical: 'bg-red-500',
+  excellent: 'bg-success',
+  good: 'bg-success/80',
+  warning: 'bg-warning',
+  critical: 'bg-destructive',
   unknown: 'bg-muted-foreground',
 }
 
-// Hex colors for non-CSS contexts (e.g. chart libraries that need raw values).
 const SUCCESS_RATE_HEX_COLOR: Record<SuccessRateLevel, string> = {
-  excellent: '#10b981', // emerald-500 (full green)
-  good: '#34d399', // emerald-400 (slightly lighter green)
-  warning: '#f59e0b', // amber-500
-  critical: '#ef4444', // red-500
-  unknown: '#9ca3af', // gray-400
+  excellent: 'var(--success)',
+  good: 'color-mix(in oklch, var(--success) 82%, var(--background))',
+  warning: 'var(--warning)',
+  critical: 'var(--destructive)',
+  unknown: 'var(--muted-foreground)',
 }
 
 export function getSuccessRateTextClass(rate: number): string {

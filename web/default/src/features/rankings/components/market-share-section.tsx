@@ -37,38 +37,35 @@ const PERIOD_DESCRIPTIONS: Record<RankingPeriod, string> = {
  * legend dots. Falls back to a neutral palette for unknown vendors so that
  * future additions still render. */
 const VENDOR_COLOURS: Record<string, string> = {
-  OpenAI: '#10a37f',
-  Anthropic: '#d97757',
-  Google: '#4285f4',
-  DeepSeek: '#7c5cff',
-  Alibaba: '#ff9900',
-  xAI: '#1f2937',
-  Meta: '#1877f2',
-  Moonshot: '#ec4899',
-  Zhipu: '#06b6d4',
-  Mistral: '#ff7000',
-  ByteDance: '#3b82f6',
-  Tencent: '#22c55e',
-  MiniMax: '#a855f7',
-  Cohere: '#fb923c',
-  Baidu: '#ef4444',
-  Others: '#94a3b8',
+  OpenAI: 'var(--chart-1)',
+  Anthropic: 'var(--chart-2)',
+  Google: 'var(--chart-3)',
+  DeepSeek: 'var(--chart-4)',
+  Alibaba: 'var(--chart-5)',
+  xAI: 'var(--foreground)',
+  Meta: 'color-mix(in oklch, var(--chart-1) 68%, var(--chart-3))',
+  Moonshot: 'color-mix(in oklch, var(--chart-2) 68%, var(--chart-4))',
+  Zhipu: 'color-mix(in oklch, var(--chart-3) 72%, var(--chart-5))',
+  Mistral: 'color-mix(in oklch, var(--chart-4) 70%, var(--chart-2))',
+  ByteDance: 'color-mix(in oklch, var(--chart-5) 70%, var(--chart-1))',
+  Tencent: 'var(--success)',
+  MiniMax: 'var(--info)',
+  Cohere: 'var(--warning)',
+  Baidu: 'var(--destructive)',
+  Others: 'var(--muted-foreground)',
 }
 
 const FALLBACK_PALETTE = [
-  '#0ea5e9',
-  '#22c55e',
-  '#a855f7',
-  '#f97316',
-  '#14b8a6',
-  '#eab308',
-  '#ec4899',
-  '#84cc16',
-  '#6366f1',
-  '#10b981',
-  '#f43f5e',
-  '#0891b2',
-  '#94a3b8',
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+  'var(--success)',
+  'var(--warning)',
+  'var(--info)',
+  'var(--destructive)',
+  'var(--muted-foreground)',
 ]
 
 function buildVendorColourMap(names: string[]): Record<string, string> {
@@ -103,12 +100,12 @@ export function MarketShareSection(props: MarketShareSectionProps) {
   const { resolvedTheme, themeReady } = useChartTheme()
   const chartTextColor =
     resolvedTheme === 'dark'
-      ? 'rgba(255, 255, 255, 0.68)'
-      : 'rgba(15, 23, 42, 0.58)'
+      ? 'color-mix(in oklch, var(--foreground) 72%, transparent)'
+      : 'color-mix(in oklch, var(--foreground) 58%, transparent)'
   const chartGridColor =
     resolvedTheme === 'dark'
-      ? 'rgba(255, 255, 255, 0.12)'
-      : 'rgba(15, 23, 42, 0.12)'
+      ? 'color-mix(in oklch, var(--foreground) 14%, transparent)'
+      : 'color-mix(in oklch, var(--foreground) 12%, transparent)'
 
   const colourMap = useMemo(
     () => buildVendorColourMap(props.history.vendors.map((v) => v.name)),
@@ -284,7 +281,8 @@ function VendorList(props: {
             aria-hidden
             className='size-2.5 shrink-0 rounded-full'
             style={{
-              backgroundColor: props.colourMap[vendor.vendor] ?? '#94a3b8',
+              backgroundColor:
+                props.colourMap[vendor.vendor] ?? 'var(--muted-foreground)',
             }}
           />
           <VendorLink
