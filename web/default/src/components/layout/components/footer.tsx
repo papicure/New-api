@@ -18,10 +18,11 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { Fragment, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
+import { FileText, MessageCircle, Receipt, ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { useStatus } from '@/hooks/use-status'
 
 interface FooterLink {
   text: string
@@ -154,69 +155,67 @@ export function Footer(props: FooterProps) {
     systemName,
     logo: systemLogo,
     footerHtml,
-    demoSiteEnabled,
   } = useSystemConfig()
 
   const displayLogo = systemLogo || props.logo || '/logo.png'
   const displayName = systemName || props.name || 'New API'
-  const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
 
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
       {
-        title: t('footer.columns.about.title'),
+        title: 'Service transparency',
         links: [
           {
-            text: t('footer.columns.about.links.aboutProject'),
-            href: 'https://docs.newapi.pro/wiki/project-introduction/',
+            text: 'Terms of Service',
+            href: '/user-agreement',
           },
           {
-            text: t('footer.columns.about.links.contact'),
-            href: 'https://docs.newapi.pro/support/community-interaction/',
+            text: 'About us',
+            href: '/about',
           },
           {
-            text: t('footer.columns.about.links.features'),
-            href: 'https://docs.newapi.pro/wiki/features-introduction/',
-          },
-        ],
-      },
-      {
-        title: t('footer.columns.docs.title'),
-        links: [
-          {
-            text: t('footer.columns.docs.links.quickStart'),
+            text: 'Usage guide',
             href: 'https://docs.newapi.pro/getting-started/',
           },
+        ],
+      },
+      {
+        title: 'Privacy and security',
+        links: [
           {
-            text: t('footer.columns.docs.links.installation'),
-            href: 'https://docs.newapi.pro/installation/',
+            text: 'Privacy Policy',
+            href: '/privacy-policy',
           },
           {
-            text: t('footer.columns.docs.links.apiDocs'),
-            href: 'https://docs.newapi.pro/api/',
+            text: 'Security notes',
+            href: 'https://docs.newapi.pro/wiki/features-introduction/',
+          },
+          {
+            text: 'API keys',
+            href: '/keys',
           },
         ],
       },
       {
-        title: t('footer.columns.related.title'),
+        title: 'Billing and plans',
         links: [
           {
-            text: t('footer.columns.related.links.oneApi'),
-            href: 'https://github.com/songquanpeng/one-api',
+            text: 'Plan pricing',
+            href: '/pricing',
           },
           {
-            text: t('footer.columns.related.links.midjourney'),
-            href: 'https://github.com/novicezk/midjourney-proxy',
+            text: 'Model pricing',
+            href: '/models',
           },
           {
-            text: t('footer.columns.related.links.newApiKeyTool'),
-            href: 'https://github.com/Calcium-Ion/new-api-key-tool',
+            text: 'Wallet',
+            href: '/wallet',
           },
         ],
       },
     ],
-    [t]
+    []
   )
 
   const displayColumns = props.columns ?? fallbackColumns
@@ -250,7 +249,7 @@ export function Footer(props: FooterProps) {
       className={cn('border-border/40 relative z-10 border-t', props.className)}
     >
       <div className='mx-auto max-w-6xl px-6 py-12 md:py-16'>
-        <div className='flex flex-col justify-between gap-10 md:flex-row md:gap-16'>
+        <div className='grid gap-12 lg:grid-cols-[1.1fr_2fr]'>
           {/* Brand column */}
           <div className='shrink-0'>
             <Link to='/' className='group flex items-center gap-2.5'>
@@ -263,30 +262,53 @@ export function Footer(props: FooterProps) {
                 {displayName}
               </span>
             </Link>
-            <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-xs leading-relaxed'>
-              {t('Powerful API Management Platform')}
+            <p className='text-muted-foreground mt-5 max-w-sm text-sm leading-7'>
+              {t(
+                'Enterprise AI coding platform with Claude Code, Codex, Gemini CLI and other AI coding tools.'
+              )}
             </p>
+            <div className='border-border/70 bg-card mt-6 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm shadow-soft'>
+              <MessageCircle className='text-primary' />
+              <span>{t('QQ community group')}: 971885281</span>
+            </div>
           </div>
 
           {/* Links columns */}
-          {isDemoSiteMode && (
-            <div className='grid grid-cols-3 gap-8 md:gap-16'>
-              {displayColumns.map((column, index) => (
-                <div key={index}>
-                  <p className='text-muted-foreground/50 mb-3 text-xs font-medium tracking-wider uppercase'>
-                    {t(column.title)}
-                  </p>
-                  <ul className='space-y-2.5'>
-                    {column.links.map((link, linkIndex) => (
-                      <li key={linkIndex}>
+          <div className='grid gap-8 md:grid-cols-3'>
+            {displayColumns.map((column, index) => {
+              const Icon =
+                index === 0 ? FileText : index === 1 ? ShieldCheck : Receipt
+              return (
+                <div key={column.title}>
+                  <div className='mb-4 flex items-center gap-2'>
+                    <Icon className='text-primary' />
+                    <p className='text-sm font-semibold'>{t(column.title)}</p>
+                  </div>
+                  <ul className='flex flex-col gap-3'>
+                    {column.links.map((link) => (
+                      <li key={link.text}>
                         <FooterLinkItem link={link} />
                       </li>
                     ))}
                   </ul>
+                  <p className='text-muted-foreground mt-5 text-xs leading-6'>
+                    {index === 0 &&
+                      t(
+                        'Public rules define service boundaries, user rights, and platform responsibilities.'
+                      )}
+                    {index === 1 &&
+                      t(
+                        'Instructions cover account, API key, and usage data processing to reduce AI coding risk.'
+                      )}
+                    {index === 2 &&
+                      t(
+                        'Prices, plans, and model costs are displayed publicly so users can verify cost before purchase.'
+                      )}
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
+              )
+            })}
+          </div>
         </div>
 
         {/* Copyright + optional legal links inline on the left, project

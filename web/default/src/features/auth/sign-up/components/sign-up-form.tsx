@@ -20,7 +20,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
+import { KeyRound, Loader2, Mail, ShieldCheck, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -235,10 +235,17 @@ export function SignUpForm({
           name='username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('Username')}</FormLabel>
-              <FormControl>
-                <Input placeholder={t('Enter your username')} {...field} />
-              </FormControl>
+              <FormLabel className='sr-only'>{t('Username')}</FormLabel>
+              <div className='relative'>
+                <UserRound className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2' />
+                <FormControl>
+                  <Input
+                    placeholder={t('Enter your username')}
+                    className='bg-muted/50 h-10 rounded-lg pl-10'
+                    {...field}
+                  />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -250,13 +257,17 @@ export function SignUpForm({
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('Password')}</FormLabel>
-              <FormControl>
-                <PasswordInput
-                  placeholder={t('Enter password (8-20 characters)')}
-                  {...field}
-                />
-              </FormControl>
+              <FormLabel className='sr-only'>{t('Password')}</FormLabel>
+              <div className='relative'>
+                <KeyRound className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2' />
+                <FormControl>
+                  <PasswordInput
+                    placeholder={t('Enter password (8-20 characters)')}
+                    className='[&_input]:bg-muted/50 [&_input]:h-10 [&_input]:rounded-lg [&_input]:pl-10'
+                    {...field}
+                  />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -268,10 +279,19 @@ export function SignUpForm({
           name='confirmPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('Confirm password')}</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder={t('Confirm password')} {...field} />
-              </FormControl>
+              <FormLabel className='sr-only'>
+                {t('Confirm password')}
+              </FormLabel>
+              <div className='relative'>
+                <KeyRound className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2' />
+                <FormControl>
+                  <PasswordInput
+                    placeholder={t('Confirm password')}
+                    className='[&_input]:bg-muted/50 [&_input]:h-10 [&_input]:rounded-lg [&_input]:pl-10'
+                    {...field}
+                  />
+                </FormControl>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -286,16 +306,20 @@ export function SignUpForm({
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className='sr-only'>
                     {t('Email (required for verification)')}
                   </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('name@example.com')}
-                      type='email'
-                      {...field}
-                    />
-                  </FormControl>
+                  <div className='relative'>
+                    <Mail className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2' />
+                    <FormControl>
+                      <Input
+                        placeholder={t('name@example.com')}
+                        type='email'
+                        className='bg-muted/50 h-10 rounded-lg pl-10'
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -303,11 +327,13 @@ export function SignUpForm({
 
             {/* Verification Code Field */}
             <div className='flex items-end gap-2'>
-              <div className='flex-1'>
+              <div className='relative flex-1'>
+                <ShieldCheck className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2' />
                 <Input
                   placeholder={t('Verification code')}
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
+                  className='bg-muted/50 h-10 rounded-lg pl-10'
                 />
               </div>
               <Button

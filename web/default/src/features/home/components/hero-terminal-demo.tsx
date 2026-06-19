@@ -16,469 +16,105 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useState, useEffect, useRef, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-
-type AccentTone = 'emerald' | 'amber' | 'blue' | 'violet'
-
-interface ApiDemoConfig {
-  id: string
-  label: string
-  method: 'POST' | 'GET'
-  endpoint: string
-  headers: string[]
-  request: string[]
-  response: string[]
-  responseHighlights: string[]
-  tokens: number
-  latency: number
-  accent: AccentTone
-}
-
-const ACCENT_CLASSES: Record<
-  AccentTone,
-  {
-    activeText: string
-    activeBorder: string
-    badge: string
-  }
-> = {
-  emerald: {
-    activeText: 'text-success',
-    activeBorder: 'border-success',
-    badge: 'bg-success/10 text-success',
-  },
-  amber: {
-    activeText: 'text-warning',
-    activeBorder: 'border-warning',
-    badge: 'bg-warning/10 text-warning',
-  },
-  blue: {
-    activeText: 'text-info',
-    activeBorder: 'border-info',
-    badge: 'bg-info/10 text-info',
-  },
-  violet: {
-    activeText: 'text-primary',
-    activeBorder: 'border-primary',
-    badge: 'bg-primary/10 text-primary',
-  },
-}
-
-const API_DEMOS: ApiDemoConfig[] = [
-  {
-    id: 'gpt-chat',
-    label: 'Chat',
-    method: 'POST',
-    endpoint: '/v1/chat/completions',
-    headers: ['"Authorization: Bearer sk-••••"'],
-    request: [
-      '"model": "your-model",',
-      '"messages": [',
-      '  { "role": "user", "content": "..." }',
-      ']',
-    ],
-    response: [
-      '{',
-      '  "choices": [{ "message": { "content": <text> } }],',
-      '  "usage": { "total_tokens": <tokens> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<tokens>'],
-    tokens: 27,
-    latency: 142,
-    accent: 'emerald',
-  },
-  {
-    id: 'responses',
-    label: 'Responses',
-    method: 'POST',
-    endpoint: '/v1/responses',
-    headers: ['"Authorization: Bearer sk-••••"'],
-    request: ['"model": "your-model",', '"input": "..."'],
-    response: [
-      '{',
-      '  "output": [{ "type": "output_text", "text": <text> }],',
-      '  "usage": { "total_tokens": <tokens> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<tokens>'],
-    tokens: 31,
-    latency: 168,
-    accent: 'amber',
-  },
-  {
-    id: 'claude',
-    label: 'Claude',
-    method: 'POST',
-    endpoint: '/v1/messages',
-    headers: ['"x-api-key: sk-••••"', '"anthropic-version: 2023-06-01"'],
-    request: [
-      '"model": "your-model",',
-      '"max_tokens": 1024,',
-      '"messages": [',
-      '  { "role": "user", "content": "..." }',
-      ']',
-    ],
-    response: [
-      '{',
-      '  "content": [{ "type": "text", "text": <text> }],',
-      '  "usage": { "input_tokens": <in>, "output_tokens": <out> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<in>', '<out>'],
-    tokens: 29,
-    latency: 156,
-    accent: 'blue',
-  },
-  {
-    id: 'gemini',
-    label: 'Gemini',
-    method: 'POST',
-    endpoint: '/v1beta/models/{model}:generateContent',
-    headers: ['"x-goog-api-key: sk-••••"'],
-    request: [
-      '"contents": [',
-      '  { "role": "user",',
-      '    "parts": [{ "text": "..." }] }',
-      ']',
-    ],
-    response: [
-      '{',
-      '  "candidates": [{ "content": { "parts": [{ "text": <text> }] } }],',
-      '  "usageMetadata": { "totalTokenCount": <tokens> }',
-      '}',
-    ],
-    responseHighlights: ['<text>', '<tokens>'],
-    tokens: 25,
-    latency: 93,
-    accent: 'violet',
-  },
-]
-
-const CYCLE_INTERVAL = 4500
-const TRANSITION_MS = 220
 
 interface HeroTerminalDemoProps {
   className?: string
+  variant?: 'home' | 'auth'
 }
 
 export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [transitioning, setTransitioning] = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (mq.matches) return
-
-    intervalRef.current = setInterval(() => {
-      setTransitioning(true)
-      timeoutRef.current = setTimeout(() => {
-        setActiveIndex((prev) => (prev + 1) % API_DEMOS.length)
-        setTransitioning(false)
-      }, TRANSITION_MS)
-    }, CYCLE_INTERVAL)
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [])
-
-  const handleSelect = (index: number) => {
-    if (index === activeIndex) return
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    setTransitioning(true)
-    timeoutRef.current = setTimeout(() => {
-      setActiveIndex(index)
-      setTransitioning(false)
-    }, TRANSITION_MS)
-  }
-
-  const demo = API_DEMOS[activeIndex]
-  const accent = ACCENT_CLASSES[demo.accent]
+  const { t } = useTranslation()
+  const variant = props.variant ?? 'home'
+  const lines =
+    variant === 'auth'
+      ? [
+          <CodeLine key='version'>
+            <Prompt>$</Prompt> <Command>claude --version</Command>
+          </CodeLine>,
+          <CodeLine key='version-output'>
+            <Muted>Claude Code v1.0.87</Muted>
+          </CodeLine>,
+          <CodeLine key='ask'>
+            <Prompt>$</Prompt>{' '}
+            <Command>
+              claude &quot;{t('Write a quicksort algorithm')}&quot;
+            </Command>
+          </CodeLine>,
+          <CodeLine key='connected'>
+            <Success>✓</Success>{' '}
+            <Muted>
+              {t('Connected to Claude Code, generating now...')}
+            </Muted>
+          </CodeLine>,
+          <CodeLine key='cursor'>
+            <Prompt>$</Prompt> <Cursor />
+          </CodeLine>,
+        ]
+      : [
+          <CodeLine key='think'>
+            <Muted>&gt;</Muted> <Command>Think harder...</Command> <Cursor />
+          </CodeLine>,
+          <CodeLine key='space'>
+            <Muted> </Muted>
+          </CodeLine>,
+          <CodeLine key='while'>
+            <Keyword>while</Keyword>
+            <Muted>(curious) {'{'}</Muted>
+          </CodeLine>,
+          <CodeLine key='question' indent={2}>
+            <FunctionName>question_everything</FunctionName>
+            <Muted>();</Muted>
+          </CodeLine>,
+          <CodeLine key='dig' indent={2}>
+            <FunctionName>dig_deeper</FunctionName>
+            <Muted>();</Muted>
+          </CodeLine>,
+          <CodeLine key='connect' indent={2}>
+            <FunctionName>connect_dots</FunctionName>
+            <Muted>(unexpected);</Muted>
+          </CodeLine>,
+          <CodeLine key='while-close'>
+            <Muted>{'}'}</Muted>
+          </CodeLine>,
+          <CodeLine key='if'>
+            <Keyword>if</Keyword>
+            <Muted>(stuck) {'{'}</Muted>
+          </CodeLine>,
+          <CodeLine key='keep' indent={2}>
+            <FunctionName>keep_thinking</FunctionName>
+            <Muted>();</Muted>
+          </CodeLine>,
+          <CodeLine key='if-close'>
+            <Muted>{'}'}</Muted>
+          </CodeLine>,
+        ]
 
   return (
-    <div className={cn('mx-auto w-full max-w-2xl', props.className)}>
-      <div
-        className={cn(
-          'overflow-hidden rounded-2xl border backdrop-blur-sm',
-          'border-border/60 bg-card/95 shadow-soft-lg'
-        )}
-      >
-        {/* Tab strip */}
-        <div
-          className={cn(
-            'flex items-center gap-1 border-b px-2 sm:gap-1.5 sm:px-3',
-            'border-border/50 dark:border-white/[0.05]'
-          )}
-        >
-          {API_DEMOS.map((item, index) => {
-            const tone = ACCENT_CLASSES[item.accent]
-            const isActive = index === activeIndex
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleSelect(index)}
-                className={cn(
-                  'relative -mb-px flex items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-[11px] font-medium tracking-wide transition-colors sm:px-3 sm:text-xs',
-                  isActive
-                    ? `${tone.activeBorder} ${tone.activeText}`
-                    : 'text-foreground/40 hover:text-foreground/70 border-transparent'
-                )}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-          <div className='ml-auto flex items-center gap-2 pr-2 sm:pr-3'>
-            <span className='bg-success inline-block size-1.5 rounded-full shadow-[0_0_8px_var(--success)]' />
-            <span className='text-foreground/40 font-mono text-[10px] tracking-wider uppercase'>
-              200 ok
-            </span>
-          </div>
-        </div>
-
-        {/* Endpoint row */}
-        <div
-          className={cn(
-            'flex items-center gap-2.5 border-b px-5 py-3',
-            'border-border/40 dark:border-white/[0.04]'
-          )}
-        >
-          <span
-            className={cn(
-              'rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wider',
-              accent.badge
-            )}
-          >
-            {demo.method}
-          </span>
-          <code
-            className={cn(
-              'text-foreground/75 truncate font-mono text-[12.5px] transition-opacity duration-200',
-              transitioning ? 'opacity-0' : 'opacity-100'
-            )}
-          >
-            {demo.endpoint}
-          </code>
-        </div>
-
-        {/* Body — fixed rows so neither block shifts when switching demos */}
-        <div className='grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono text-[12.5px] leading-[1.55]'>
-          {/* Request */}
-          <RequestBlock demo={demo} transitioning={transitioning} />
-
-          {/* Response */}
-          <ResponseBlock demo={demo} transitioning={transitioning} />
-        </div>
-
-        {/* Footer metrics */}
-        <div
-          className={cn(
-            'flex items-center justify-between border-t px-5 py-2.5',
-            'border-border/40 bg-muted/30 dark:border-white/[0.05] dark:bg-white/[0.02]'
-          )}
-        >
-          <div className='text-foreground/40 flex items-center gap-3 text-[10px] tabular-nums'>
-            <span className='flex items-center gap-1'>
-              <span className='font-mono'>{demo.latency}</span>
-              <span className='tracking-wider uppercase'>ms</span>
-            </span>
-            <span className='bg-foreground/15 size-1 rounded-full' />
-            <span className='flex items-center gap-1'>
-              <span className='font-mono'>{demo.tokens}</span>
-              <span className='tracking-wider uppercase'>tokens</span>
-            </span>
-            <span className='bg-foreground/15 size-1 rounded-full' />
-            <span className='flex items-center gap-1'>
-              <span className='tracking-wider uppercase'>cost</span>
-              <span className='font-mono'>
-                ${(demo.tokens * 0.00003).toFixed(5)}
-              </span>
-            </span>
-          </div>
-          <span className='text-foreground/30 font-mono text-[10px] tracking-wider uppercase'>
-            stream · sse
+    <div className={cn('mx-auto w-full max-w-md', props.className)}>
+      <div className='bg-neutral-foreground text-primary-foreground border-border/60 shadow-soft-lg overflow-hidden rounded-xl border'>
+        <div className='border-border/20 bg-background/10 flex h-10 items-center gap-2 border-b px-4'>
+          <span className='bg-destructive size-3 rounded-full' />
+          <span className='bg-warning size-3 rounded-full' />
+          <span className='bg-success size-3 rounded-full' />
+          <span className='text-primary-foreground/40 ml-auto font-mono text-[10px] font-semibold tracking-wide'>
+            Terminal
           </span>
         </div>
+
+        <div className='p-5 font-mono text-[12px] leading-7 sm:p-6'>
+          {variant === 'home' && (
+            <div className='border-primary/40 bg-background/5 text-primary mb-5 inline-flex rounded-md border px-3 py-1 text-xs'>
+              * {t('Welcome to Claude Code')}
+            </div>
+          )}
+          <div className='min-h-[11rem]'>{lines}</div>
+        </div>
       </div>
     </div>
   )
-}
-
-function RequestBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
-  const { demo, transitioning } = props
-
-  return (
-    <div className='relative px-5 py-4'>
-      <SectionLabel>Request</SectionLabel>
-      <div
-        className={cn(
-          'mt-2 transition-opacity duration-200',
-          transitioning ? 'opacity-0' : 'opacity-100'
-        )}
-      >
-        <CodeLine>
-          <Command>curl</Command> <Flag>-X</Flag> <Flag>POST</Flag>{' '}
-          <StringText>&quot;{demo.endpoint}&quot;</StringText>{' '}
-          <Muted>{'\\'}</Muted>
-        </CodeLine>
-        {demo.headers.map((header) => (
-          <CodeLine key={header} indent={2}>
-            <Flag>-H</Flag> <StringText>{header}</StringText>{' '}
-            <Muted>{'\\'}</Muted>
-          </CodeLine>
-        ))}
-        <CodeLine indent={2}>
-          <Flag>-d</Flag> <StringText>&apos;{'{'}</StringText>
-        </CodeLine>
-        {demo.request.map((line, i) => (
-          <CodeLine key={i} indent={4}>
-            {renderJsonLine(line)}
-          </CodeLine>
-        ))}
-        <CodeLine indent={2}>
-          <StringText>{'}'}&apos;</StringText>
-        </CodeLine>
-      </div>
-    </div>
-  )
-}
-
-function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
-  const { demo, transitioning } = props
-
-  return (
-    <div
-      className={cn(
-        'relative border-t px-5 py-4',
-        'border-border/40 bg-muted/20 dark:border-white/[0.05] dark:bg-white/[0.015]'
-      )}
-    >
-      <SectionLabel>Response</SectionLabel>
-      <div
-        className={cn(
-          'mt-2 transition-opacity duration-200',
-          transitioning ? 'opacity-0' : 'opacity-100'
-        )}
-      >
-        {demo.response.map((line, i) => (
-          <CodeLine key={i}>{renderResponseLine(line, demo)}</CodeLine>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function SectionLabel(props: { children: ReactNode }) {
-  return (
-    <span className='text-foreground/30 font-sans text-[10px] font-semibold tracking-[0.18em] uppercase'>
-      {props.children}
-    </span>
-  )
-}
-
-const STRING_RE = /"[^"]*"/g
-const PLACEHOLDER_RE = /<[a-z]+>/gi
-
-function renderJsonLine(line: string): ReactNode {
-  if (!line.trim()) return <Muted> </Muted>
-  return tokenize(line)
-}
-
-function renderResponseLine(line: string, demo: ApiDemoConfig): ReactNode {
-  if (!line.trim()) return <Muted> </Muted>
-
-  const segments: ReactNode[] = []
-  let cursor = 0
-  const matches = [...line.matchAll(PLACEHOLDER_RE)]
-
-  if (matches.length === 0) return tokenize(line)
-
-  matches.forEach((match, idx) => {
-    const start = match.index ?? 0
-    if (start > cursor) {
-      segments.push(
-        <span key={`pre-${idx}`}>{tokenize(line.slice(cursor, start))}</span>
-      )
-    }
-    const placeholder = match[0]
-    if (placeholder === '<text>') {
-      segments.push(
-        <Accent key={`ph-${idx}`} accent={demo.accent}>
-          {`"${truncateResponse(demo)}"`}
-        </Accent>
-      )
-    } else if (placeholder === '<tokens>') {
-      segments.push(<NumberText key={`ph-${idx}`}>{demo.tokens}</NumberText>)
-    } else if (placeholder === '<in>') {
-      segments.push(
-        <NumberText key={`ph-${idx}`}>
-          {Math.floor(demo.tokens * 0.4)}
-        </NumberText>
-      )
-    } else if (placeholder === '<out>') {
-      segments.push(
-        <NumberText key={`ph-${idx}`}>
-          {Math.ceil(demo.tokens * 0.6)}
-        </NumberText>
-      )
-    } else {
-      segments.push(<Muted key={`ph-${idx}`}>{placeholder}</Muted>)
-    }
-    cursor = start + placeholder.length
-  })
-
-  if (cursor < line.length) {
-    segments.push(<span key='tail'>{tokenize(line.slice(cursor))}</span>)
-  }
-
-  return segments
-}
-
-function truncateResponse(demo: ApiDemoConfig): string {
-  const map: Record<string, string> = {
-    'gpt-chat': 'Chat request routed.',
-    responses: 'Response workflow ready.',
-    claude: 'Claude message routed.',
-    gemini: 'Gemini request served.',
-  }
-  return map[demo.id] ?? '...'
-}
-
-function tokenize(input: string): ReactNode {
-  // Split string into "..." string runs and the rest, then color keys/punct.
-  const segments: ReactNode[] = []
-  let cursor = 0
-  const matches = [...input.matchAll(STRING_RE)]
-
-  matches.forEach((match, idx) => {
-    const start = match.index ?? 0
-    if (start > cursor) {
-      segments.push(
-        <Muted key={`m-${idx}`}>{input.slice(cursor, start)}</Muted>
-      )
-    }
-    const text = match[0]
-    const after = input.slice(start + text.length).trimStart()
-    const isKey = after.startsWith(':')
-    if (isKey) {
-      segments.push(<Key key={`k-${idx}`}>{text}</Key>)
-    } else {
-      segments.push(<StringText key={`s-${idx}`}>{text}</StringText>)
-    }
-    cursor = start + text.length
-  })
-
-  if (cursor < input.length) {
-    segments.push(<Muted key='tail'>{input.slice(cursor)}</Muted>)
-  }
-
-  return segments
 }
 
 function CodeLine(props: { children: ReactNode; indent?: number }) {
@@ -496,47 +132,39 @@ function CodeLine(props: { children: ReactNode; indent?: number }) {
   )
 }
 
+function Prompt(props: { children: ReactNode }) {
+  return <span className='text-success'>{props.children}</span>
+}
+
 function Command(props: { children: ReactNode }) {
   return (
-    <span className='text-success font-medium'>
+    <span className='text-primary-foreground font-semibold'>
       {props.children}
     </span>
   )
 }
 
-function Flag(props: { children: ReactNode }) {
-  return (
-    <span className='text-info'>{props.children}</span>
-  )
+function Keyword(props: { children: ReactNode }) {
+  return <span className='text-primary font-semibold'>{props.children}</span>
 }
 
-function Key(props: { children: ReactNode }) {
-  return (
-    <span className='text-info'>{props.children}</span>
-  )
+function FunctionName(props: { children: ReactNode }) {
+  return <span className='text-info'>{props.children}</span>
 }
 
-function StringText(props: { children: ReactNode }) {
-  return (
-    <span className='text-warning'>{props.children}</span>
-  )
-}
-
-function NumberText(props: { children: ReactNode }) {
-  return (
-    <span className='font-medium text-violet-600 dark:text-violet-300'>
-      {props.children}
-    </span>
-  )
+function Success(props: { children: ReactNode }) {
+  return <span className='text-success'>{props.children}</span>
 }
 
 function Muted(props: { children: ReactNode }) {
-  return <span className='text-foreground/55'>{props.children}</span>
+  return <span className='text-primary-foreground/55'>{props.children}</span>
 }
 
-function Accent(props: { children: ReactNode; accent: AccentTone }) {
-  const tone = ACCENT_CLASSES[props.accent]
+function Cursor() {
   return (
-    <span className={cn('font-medium', tone.activeText)}>{props.children}</span>
+    <span
+      aria-hidden
+      className='bg-primary-foreground/70 inline-block h-4 w-2 translate-y-0.5 animate-pulse'
+    />
   )
 }

@@ -20,4 +20,11 @@ export { CTA } from './sections/cta'
 export { Features } from './sections/features'
 export { Hero } from './sections/hero'
 export { HowItWorks } from './sections/how-it-works'
+export {
+  AiTools,
+  FAQAndCTA,
+  PlatformSupport,
+  SharedPool,
+  WhyChooseUs,
+} from './sections/landing-sections'
 export { Stats } from './sections/stats'

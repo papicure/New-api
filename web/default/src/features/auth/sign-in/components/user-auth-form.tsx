@@ -21,7 +21,7 @@ import type { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { Loader2, LogIn, KeyRound } from 'lucide-react'
+import { KeyRound, Loader2, LogIn, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
@@ -335,13 +335,19 @@ export function UserAuthForm({
               name='username'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Username or Email')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('Enter your username or email')}
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel className='sr-only'>
+                    {t('Username or Email')}
+                  </FormLabel>
+                  <div className='relative'>
+                    <Mail className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2' />
+                    <FormControl>
+                      <Input
+                        placeholder={t('Enter your username or email')}
+                        className='bg-muted/50 h-10 rounded-lg pl-10'
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -353,17 +359,21 @@ export function UserAuthForm({
               name='password'
               render={({ field }) => (
                 <FormItem className='relative'>
-                  <FormLabel>{t('Password')}</FormLabel>
-                  <FormControl>
-                    <PasswordInput
-                      placeholder={t('Enter password')}
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel className='sr-only'>{t('Password')}</FormLabel>
+                  <div className='relative'>
+                    <KeyRound className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2' />
+                    <FormControl>
+                      <PasswordInput
+                        placeholder={t('Enter password')}
+                        className='[&_input]:bg-muted/50 [&_input]:h-10 [&_input]:rounded-lg [&_input]:pl-10'
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                   <Link
                     to='/forgot-password'
-                    className='text-muted-foreground absolute end-0 -top-0.5 z-10 text-sm font-medium hover:opacity-75'
+                    className='text-primary mt-1 justify-self-end text-sm font-medium hover:opacity-75'
                   >
                     {t('Forgot password?')}
                   </Link>

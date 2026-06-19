@@ -100,6 +100,15 @@ const Toaster = (props: ToasterProps) => {
           '--border-radius': 'var(--radius)',
         } as React.CSSProperties
       }
+      toastOptions={{
+        classNames: {
+          toast:
+            'group/toast border-border/70 bg-popover text-popover-foreground shadow-soft-lg',
+          closeButton:
+            'right-2 top-2 left-auto translate-x-0 translate-y-0 opacity-0 transition-opacity duration-150 group-hover/toast:opacity-100 group-focus-within/toast:opacity-100',
+        },
+        ...props.toastOptions,
+      }}
       {...props}
     />
   )
