@@ -21,6 +21,7 @@ import { ArrowDown, ArrowRight, Sparkle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
+import { RotatingText } from '@/components/rotating-text'
 import { Button } from '@/components/ui/button'
 import { useStatus } from '@/hooks/use-status'
 
@@ -44,7 +45,14 @@ export function Hero(props: HeroProps) {
         <AnimateInView className='mx-auto flex max-w-xl flex-col items-start text-left lg:mx-0'>
           <div className='border-border/70 bg-card text-primary shadow-soft mb-6 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-mono text-xs font-semibold tracking-wide'>
             <Sparkle data-icon='inline-start' />
-            <span>{t('Built for AI coding')}</span>
+            <RotatingText
+              words={[
+                t('Built for AI coding'),
+                t('Claude Code ready'),
+                t('Codex ready'),
+                t('Gemini CLI ready'),
+              ]}
+            />
           </div>
 
           <h1 className='font-serif text-5xl leading-[0.98] font-semibold text-balance md:text-6xl'>

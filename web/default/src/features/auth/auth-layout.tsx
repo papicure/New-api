@@ -20,6 +20,7 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Skeleton } from '@/components/ui/skeleton'
+import { RotatingText } from '@/components/rotating-text'
 import { HeroTerminalDemo } from '@/features/home/components/hero-terminal-demo'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { cn } from '@/lib/utils'
@@ -42,7 +43,10 @@ export function AuthLayout(props: AuthLayoutProps) {
   const subtitle =
     props.subtitle ??
     (mode === 'sign-up' ? t('Email registration') : t('Password login'))
-  const rightAccent = mode === 'sign-up' ? t('experience') : t('coding journey')
+  const accentWords =
+    mode === 'sign-up'
+      ? [t('experience'), t('journey'), t('workflow')]
+      : [t('coding journey'), t('era'), t('workflow')]
 
   return (
     <div className='bg-background grid min-h-svh lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]'>
@@ -115,8 +119,8 @@ export function AuthLayout(props: AuthLayoutProps) {
         />
         <div className='relative w-full max-w-lg'>
           <h2 className='font-serif text-4xl leading-tight font-semibold text-balance'>
-            {t('Start your AI')}
-            <span className='text-primary'> {rightAccent}</span>
+            {t('Start your AI')}{' '}
+            <RotatingText words={accentWords} className='text-primary' />
           </h2>
           <p className='text-muted-foreground mt-4 max-w-md text-sm leading-7'>
             {t(

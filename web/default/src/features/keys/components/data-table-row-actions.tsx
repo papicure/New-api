@@ -22,6 +22,7 @@ import {
   Edit,
   Power,
   PowerOff,
+  PauseCircle,
   ExternalLink,
   ArrowRightLeft,
   Copy,
@@ -54,6 +55,7 @@ import { useChatPresets } from '@/features/chat/hooks/use-chat-presets'
 import { resolveChatUrl, type ChatPreset } from '@/features/chat/lib/chat-links'
 import { sendToFluent } from '@/features/chat/lib/send-to-fluent'
 import { copyToClipboard } from '@/lib/copy-to-clipboard'
+import { cn } from '@/lib/utils'
 
 import { updateApiKeyStatus } from '../api'
 import { API_KEY_STATUS, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
@@ -83,10 +85,18 @@ function encodeConnectionString(key: string, url: string): string {
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
+  /**
+   * `menu` (default): compact toggle + "..." menu for the dense table view.
+   * `bar`: an expanded footer button row (Edit / Enable-Disable / Delete shown
+   * as labelled buttons, secondary actions tucked into a "..." menu) used by
+   * the card list to mirror the reference design.
+   */
+  variant?: 'menu' | 'bar'
 }
 
 export function DataTableRowActions<TData>({
   row,
+  variant = 'menu',
 }: DataTableRowActionsProps<TData>) {
   const { t } = useTranslation()
   const apiKey = apiKeySchema.parse(row.original)
@@ -191,6 +201,158 @@ export function DataTableRowActions<TData>({
     }
   }
 
+  // Status toggle icon, computed without nested ternaries. The bar variant uses
+  // PauseCircle for the disable affordance; the menu variant uses PowerOff.
+  let toggleIconMenu = <Power className='size-4' />
+  let toggleIconBar = <Power className='size-4' />
+  if (isTogglingStatus) {
+    const spinner = <Loader2 className='size-4 animate-spin' />
+    toggleIconMenu = spinner
+    toggleIconBar = spinner
+  } else if (isEnabled) {
+    toggleIconMenu = <PowerOff className='size-4' />
+    toggleIconBar = <PauseCircle className='size-4' />
+  }
+
+  const editKey = () => {
+    setCurrentRow(apiKey)
+    setOpen('update')
+  }
+
+  const deleteKey = () => {
+    setCurrentRow(apiKey)
+    setOpen('delete')
+  }
+
+  // Secondary actions shared by both variants. In `menu` mode these sit
+  // alongside Edit/Delete; in `bar` mode they are the only menu contents
+  // because Edit/Delete are promoted to standalone footer buttons.
+  const secondaryMenuItems = (
+    <>
+      <DropdownMenuItem
+        onClick={async () => {
+          const realKey = getCachedRealKey()
+          if (!realKey) return
+          const ok = await copyToClipboard(realKey)
+          if (ok) toast.success(t('Copied'))
+        }}
+      >
+        {t('Copy Key')}
+        <DropdownMenuShortcut>
+          <Copy size={16} />
+        </DropdownMenuShortcut>
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={async () => {
+          const realKey = getCachedRealKey()
+          if (!realKey) return
+          const connStr = encodeConnectionString(realKey, getServerAddress())
+          const ok = await copyToClipboard(connStr)
+          if (ok) toast.success(t('Copied'))
+        }}
+      >
+        {t('Copy Connection Info')}
+        <DropdownMenuShortcut>
+          <Link size={16} />
+        </DropdownMenuShortcut>
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={async () => {
+          const realKey = await resolveRealKey(apiKey.id)
+          if (!realKey) return
+          setResolvedKey(realKey)
+          setCurrentRow(apiKey)
+          setOpen('cc-switch')
+        }}
+      >
+        {t('CC Switch')}
+        <DropdownMenuShortcut>
+          <ArrowRightLeft size={16} />
+        </DropdownMenuShortcut>
+      </DropdownMenuItem>
+      {hasChatPresets && (
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{t('Chat')}</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {chatPresets.map((preset) => (
+              <DropdownMenuItem
+                key={preset.id}
+                onClick={() => handleOpenChatPreset(preset)}
+              >
+                {preset.name}
+                {preset.type !== 'web' && (
+                  <DropdownMenuShortcut>
+                    <ExternalLink size={16} />
+                  </DropdownMenuShortcut>
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+      )}
+    </>
+  )
+
+  if (variant === 'bar') {
+    return (
+      <div className='flex flex-wrap items-center justify-end gap-1'>
+        <DropdownMenu modal={false} onOpenChange={handleMenuOpenChange}>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant='ghost'
+                size='sm'
+                className='data-popup-open:bg-muted text-muted-foreground gap-1.5'
+              />
+            }
+          >
+            <DotsHorizontalIcon className='size-4' />
+            {t('More')}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end' className='w-[200px]'>
+            {secondaryMenuItems}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={editKey}
+          className='gap-1.5'
+        >
+          <Edit className='size-4' />
+          {t('Edit')}
+        </Button>
+
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={() => handleToggleStatus()}
+          disabled={isTogglingStatus}
+          className={cn(
+            'gap-1.5',
+            isEnabled
+              ? 'text-muted-foreground'
+              : 'text-success hover:text-success'
+          )}
+        >
+          {toggleIconBar}
+          {isEnabled ? t('Disable') : t('Enable')}
+        </Button>
+
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={deleteKey}
+          className='text-destructive hover:text-destructive gap-1.5'
+        >
+          <Trash2 className='size-4' />
+          {t('Delete')}
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className='-ml-1.5 flex items-center gap-1'>
       <Tooltip>
@@ -210,13 +372,7 @@ export function DataTableRowActions<TData>({
             />
           }
         >
-          {isTogglingStatus ? (
-            <Loader2 className='size-4 animate-spin' />
-          ) : isEnabled ? (
-            <PowerOff className='size-4' />
-          ) : (
-            <Power className='size-4' />
-          )}
+          {toggleIconMenu}
         </TooltipTrigger>
         <TooltipContent>
           {isEnabled ? t('Disable') : t('Enable')}
@@ -236,88 +392,17 @@ export function DataTableRowActions<TData>({
           <span className='sr-only'>{t('Open menu')}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[200px]'>
-          <DropdownMenuItem
-            onClick={async () => {
-              const realKey = getCachedRealKey()
-              if (!realKey) return
-              const ok = await copyToClipboard(realKey)
-              if (ok) toast.success(t('Copied'))
-            }}
-          >
-            {t('Copy Key')}
-            <DropdownMenuShortcut>
-              <Copy size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={async () => {
-              const realKey = getCachedRealKey()
-              if (!realKey) return
-              const connStr = encodeConnectionString(
-                realKey,
-                getServerAddress()
-              )
-              const ok = await copyToClipboard(connStr)
-              if (ok) toast.success(t('Copied'))
-            }}
-          >
-            {t('Copy Connection Info')}
-            <DropdownMenuShortcut>
-              <Link size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {secondaryMenuItems}
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(apiKey)
-              setOpen('update')
-            }}
-          >
+          <DropdownMenuItem onClick={editKey}>
             {t('Edit')}
             <DropdownMenuShortcut>
               <Edit size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={async () => {
-              const realKey = await resolveRealKey(apiKey.id)
-              if (!realKey) return
-              setResolvedKey(realKey)
-              setCurrentRow(apiKey)
-              setOpen('cc-switch')
-            }}
-          >
-            {t('CC Switch')}
-            <DropdownMenuShortcut>
-              <ArrowRightLeft size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          {hasChatPresets && (
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>{t('Chat')}</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                {chatPresets.map((preset) => (
-                  <DropdownMenuItem
-                    key={preset.id}
-                    onClick={() => handleOpenChatPreset(preset)}
-                  >
-                    {preset.name}
-                    {preset.type !== 'web' && (
-                      <DropdownMenuShortcut>
-                        <ExternalLink size={16} />
-                      </DropdownMenuShortcut>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(apiKey)
-              setOpen('delete')
-            }}
+            onClick={deleteKey}
             className='text-destructive focus:text-destructive'
           >
             {t('Delete')}

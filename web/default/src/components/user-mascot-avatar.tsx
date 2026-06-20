@@ -81,7 +81,7 @@ export function UserMascotAvatar({
       viewBox='0 0 64 64'
       role='img'
       aria-label={alt ?? name}
-      className={cn('size-full shrink-0 select-none', className)}
+      className={cn('size-full! shrink-0 select-none', className)}
     >
       <circle cx='32' cy='32' r='32' fill={palette.bg} />
       {/* Ears tucked behind the fluff */}

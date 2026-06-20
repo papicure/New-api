@@ -123,11 +123,8 @@ function ApiKeyDetailCard({
             />
           )}
         </div>
-        <div className='flex shrink-0 items-center gap-1'>
-          <div className='hidden max-w-[14rem] sm:block'>
-            <ApiKeyCell apiKey={apiKey} />
-          </div>
-          <DataTableRowActions row={rowAdapter} />
+        <div className='hidden max-w-[16rem] shrink-0 sm:block'>
+          <ApiKeyCell apiKey={apiKey} />
         </div>
       </div>
 
@@ -178,6 +175,10 @@ function ApiKeyDetailCard({
         <div className='w-full sm:hidden'>
           <ApiKeyCell apiKey={apiKey} />
         </div>
+      </div>
+
+      <div className='mt-3 flex items-center justify-end border-t pt-3'>
+        <DataTableRowActions row={rowAdapter} variant='bar' />
       </div>
     </div>
   )
