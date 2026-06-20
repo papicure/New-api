@@ -30,6 +30,7 @@ import { useSidebarView } from '@/hooks/use-sidebar-view'
 import { MOTION_TRANSITION, MOTION_VARIANTS } from '@/lib/motion'
 
 import { NavGroup } from './nav-group'
+import { NavUser } from './nav-user'
 import { SidebarViewHeader } from './sidebar-view-header'
 import { SystemBrand } from './system-brand'
 
@@ -88,6 +89,8 @@ export function AppSidebar() {
           </motion.div>
         </AnimatePresence>
       </SidebarContent>
+
+      <NavUser />
 
       <SidebarRail />
     </Sidebar>

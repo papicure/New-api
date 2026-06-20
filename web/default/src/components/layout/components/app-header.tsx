@@ -16,13 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { Link } from '@tanstack/react-router'
 import { Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { useNotifications } from '@/hooks/use-notifications'
 import { formatQuota } from '@/lib/format'
@@ -30,6 +30,7 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import { AppBreadcrumb } from './app-breadcrumb'
 import { Header } from './header'
+import { HelpMenu } from './help-menu'
 
 /**
  * General application Header component
@@ -75,10 +76,10 @@ type AppHeaderProps = {
    */
   showConfigDrawer?: boolean
   /**
-   * Whether to show profile dropdown
+   * Whether to show the help menu
    * @default true
    */
-  showProfileDropdown?: boolean
+  showHelp?: boolean
 }
 
 export function AppHeader({
@@ -87,7 +88,7 @@ export function AppHeader({
   rightContent,
   showNotifications = true,
   showConfigDrawer = true,
-  showProfileDropdown = true,
+  showHelp = true,
 }: AppHeaderProps) {
   const { t } = useTranslation()
   const quota = useAuthStore((state) => state.auth.user?.quota)
@@ -108,8 +109,9 @@ export function AppHeader({
 
         {rightContent ?? (
           <div className='ms-auto flex items-center gap-1 sm:gap-2'>
-            {showSearch && <Search />}
             <BalancePill label={t('Balance')} quota={quota} />
+            <div className='bg-border/70 mx-1 hidden h-5 w-px sm:block' />
+            {showSearch && <Search />}
             {showNotifications && (
               <NotificationPopover
                 open={notifications.popoverOpen}
@@ -124,7 +126,7 @@ export function AppHeader({
             )}
             <LanguageSwitcher />
             {showConfigDrawer && <ConfigDrawer />}
-            {showProfileDropdown && <ProfileDropdown />}
+            {showHelp && <HelpMenu />}
           </div>
         )}
       </Header>
@@ -133,15 +135,20 @@ export function AppHeader({
 }
 
 function BalancePill(props: { label: string; quota?: number }) {
+  const { t } = useTranslation()
   if (props.quota == null || !Number.isFinite(props.quota)) return null
 
   return (
-    <div className='border-border/70 bg-card text-card-foreground shadow-soft hidden h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium tabular-nums sm:inline-flex'>
+    <Link
+      to='/wallet'
+      aria-label={t('Top up balance')}
+      className='border-border/70 bg-card text-card-foreground shadow-soft hover:border-primary/50 hover:bg-accent focus-visible:ring-ring/40 hidden h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium tabular-nums transition-colors focus-visible:ring-2 focus-visible:outline-none sm:inline-flex'
+    >
       <Wallet className='text-primary size-3.5 shrink-0' aria-hidden='true' />
       <span className='text-muted-foreground hidden lg:inline'>
         {props.label}
       </span>
       <span>{formatQuota(props.quota)}</span>
-    </div>
+    </Link>
   )
 }
