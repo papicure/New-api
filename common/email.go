@@ -10,6 +10,95 @@ import (
 	"time"
 )
 
+// BuildBrandedEmail wraps the given inner HTML body in a branded, email-client
+// safe HTML shell styled after the warm "cream + terracotta" Claude Code look.
+// Uses table-based layout and inline styles for maximum mail-client support.
+// preheader is the short hidden summary line shown in inbox previews.
+func BuildBrandedEmail(heading string, preheader string, innerHTML string) string {
+	brand := SystemName
+	if brand == "" {
+		brand = "New API"
+	}
+
+	logoBlock := fmt.Sprintf(
+		`<span style="display:inline-block;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#D97757;letter-spacing:0.2px;">%s</span>`,
+		htmlEscapeText(brand),
+	)
+	if Logo != "" {
+		logoBlock = fmt.Sprintf(
+			`<img src="%s" alt="%s" height="36" style="display:inline-block;height:36px;max-height:36px;border:0;outline:none;text-decoration:none;" />`,
+			Logo, htmlEscapeText(brand),
+		)
+	}
+
+	footerText := Footer
+	if footerText == "" {
+		footerText = fmt.Sprintf("&copy; %s · %s", time.Now().Format("2006"), htmlEscapeText(brand))
+	}
+
+	return fmt.Sprintf(`<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="x-apple-disable-message-reformatting" />
+<title>%[1]s</title>
+</head>
+<body style="margin:0;padding:0;background-color:#F0EADD;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#F0EADD;">%[2]s</div>
+<table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F0EADD;margin:0;padding:0;">
+<tr>
+<td align="center" style="padding:32px 16px;">
+<table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;width:100%%;">
+<tr>
+<td align="center" style="padding:8px 4px 24px 4px;">%[3]s</td>
+</tr>
+<tr>
+<td style="background-color:#FFFDF7;border:1px solid #E7DFCF;border-radius:16px;padding:40px 36px;box-shadow:0 1px 2px rgba(61,58,52,0.04);">
+<h1 style="margin:0 0 20px 0;font-family:Georgia,'Times New Roman',serif;font-size:22px;line-height:1.35;font-weight:700;color:#2B2925;">%[4]s</h1>
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.7;color:#4A463F;">%[5]s</div>
+</td>
+</tr>
+<tr>
+<td align="center" style="padding:24px 16px 4px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#9A9384;">%[6]s</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`, htmlEscapeText(heading), htmlEscapeText(preheader), logoBlock, htmlEscapeText(heading), innerHTML, footerText)
+}
+
+// htmlEscapeText escapes a string for safe inclusion in HTML text/attributes.
+func htmlEscapeText(s string) string {
+	r := strings.NewReplacer(
+		"&", "&amp;",
+		"<", "&lt;",
+		">", "&gt;",
+		`"`, "&quot;",
+		"'", "&#39;",
+	)
+	return r.Replace(s)
+}
+
+// EmailVerificationCodeBadge renders a verification code as a prominent,
+// brand-styled badge for use inside BuildBrandedEmail bodies.
+func EmailVerificationCodeBadge(code string) string {
+	return fmt.Sprintf(
+		`<div style="margin:24px 0;text-align:center;"><span style="display:inline-block;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:30px;font-weight:700;letter-spacing:8px;color:#D97757;background-color:#FBF1E9;border:1px solid #F0D9C8;border-radius:12px;padding:14px 28px;">%s</span></div>`,
+		htmlEscapeText(code),
+	)
+}
+
+// EmailPrimaryButton renders a terracotta call-to-action button linking to url.
+func EmailPrimaryButton(label string, url string) string {
+	return fmt.Sprintf(
+		`<div style="margin:24px 0;text-align:center;"><a href="%s" target="_blank" style="display:inline-block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#FFFFFF;background-color:#D97757;text-decoration:none;border-radius:10px;padding:13px 32px;">%s</a></div>`,
+		url, htmlEscapeText(label),
+	)
+}
+
 func generateMessageID() (string, error) {
 	split := strings.Split(SMTPFrom, "@")
 	if len(split) < 2 {

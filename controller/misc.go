@@ -286,10 +286,14 @@ func SendEmailVerification(c *gin.Context) {
 	}
 	code := common.GenerateVerificationCode(6)
 	common.RegisterVerificationCodeWithKey(email, code, common.EmailVerificationPurpose)
-	subject := fmt.Sprintf("%s邮箱验证邮件", common.SystemName)
-	content := fmt.Sprintf("<p>您好，你正在进行%s邮箱验证。</p>"+
-		"<p>您的验证码为: <strong>%s</strong></p>"+
-		"<p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
+	subject := fmt.Sprintf("【%s】邮箱验证码：%s", common.SystemName, code)
+	preheader := fmt.Sprintf("您的验证码为 %s，%d 分钟内有效。", code, common.VerificationValidMinutes)
+	body := fmt.Sprintf(
+		"<p style=\"margin:0 0 12px 0;\">您好，您正在 %s 进行邮箱验证。请在验证页面输入下方验证码完成操作：</p>"+
+			"%s"+
+			"<p style=\"margin:12px 0 0 0;color:#6B6558;\">验证码 %d 分钟内有效。若非本人操作，请忽略本邮件，您的账户不会受到影响。</p>",
+		common.SystemName, common.EmailVerificationCodeBadge(code), common.VerificationValidMinutes)
+	content := common.BuildBrandedEmail("验证您的邮箱地址", preheader, body)
 	err := common.SendEmail(subject, email, content)
 	if err != nil {
 		common.ApiError(c, err)
@@ -315,11 +319,16 @@ func SendPasswordResetEmail(c *gin.Context) {
 		code := common.GenerateVerificationCode(0)
 		common.RegisterVerificationCodeWithKey(email, code, common.PasswordResetPurpose)
 		link := fmt.Sprintf("%s/user/reset?email=%s&token=%s", system_setting.ServerAddress, email, code)
-		subject := fmt.Sprintf("%s密码重置", common.SystemName)
-		content := fmt.Sprintf("<p>您好，你正在进行%s密码重置。</p>"+
-			"<p>点击 <a href='%s'>此处</a> 进行密码重置。</p>"+
-			"<p>如果链接无法点击，请尝试点击下面的链接或将其复制到浏览器中打开：<br> %s </p>"+
-			"<p>重置链接 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, link, link, common.VerificationValidMinutes)
+		subject := fmt.Sprintf("【%s】重置您的账户密码", common.SystemName)
+		preheader := fmt.Sprintf("点击邮件中的按钮重置密码，链接 %d 分钟内有效。", common.VerificationValidMinutes)
+		body := fmt.Sprintf(
+			"<p style=\"margin:0 0 12px 0;\">您好，我们收到了重置 %s 账户密码的请求。点击下方按钮即可设置新密码：</p>"+
+				"%s"+
+				"<p style=\"margin:12px 0 4px 0;color:#6B6558;\">如果按钮无法点击，请复制下方链接到浏览器打开：</p>"+
+				"<p style=\"margin:0 0 12px 0;word-break:break-all;\"><a href=\"%s\" target=\"_blank\" style=\"color:#D97757;\">%s</a></p>"+
+				"<p style=\"margin:12px 0 0 0;color:#6B6558;\">链接 %d 分钟内有效。若非本人操作，请忽略本邮件，您的密码不会被更改。</p>",
+			common.SystemName, common.EmailPrimaryButton("重置密码", link), link, link, common.VerificationValidMinutes)
+		content := common.BuildBrandedEmail("重置您的密码", preheader, body)
 		err := common.SendEmail(subject, email, content)
 		if err != nil {
 			logger.LogError(c.Request.Context(), fmt.Sprintf("failed to send password reset email to %s: %s", email, err.Error()))
