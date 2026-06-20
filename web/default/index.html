@@ -157,12 +157,14 @@
         height: 64px;
         border-radius: 14px;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         animation: app-logo-breathe 2.4s ease-in-out infinite;
       }
-      .app-loading__logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+      .app-loading__logo svg {
+        width: 60%;
+        height: 60%;
         display: block;
       }
       .app-loading__logo::after {
@@ -292,35 +294,50 @@
   </head>
 
   <body>
-    <div id="root">
-      <div class="app-loading">
-        <div class="app-loading__orb app-loading__orb--1"></div>
-        <div class="app-loading__orb app-loading__orb--2"></div>
-        <div class="app-loading__orb app-loading__orb--3"></div>
-        <div class="app-loading__particles">
-          <div class="app-loading__particle"></div>
-          <div class="app-loading__particle"></div>
-          <div class="app-loading__particle"></div>
-          <div class="app-loading__particle"></div>
-          <div class="app-loading__particle"></div>
-          <div class="app-loading__particle"></div>
+    <div id="root"></div>
+    <!--
+      First-paint loading overlay. Kept OUTSIDE #root so the app's mount
+      guard (`if (!rootElement.innerHTML)`) still fires; main.tsx removes
+      this element once React has mounted. Pure CSS animations only.
+    -->
+    <div id="app-loading" class="app-loading">
+      <div class="app-loading__orb app-loading__orb--1"></div>
+      <div class="app-loading__orb app-loading__orb--2"></div>
+      <div class="app-loading__orb app-loading__orb--3"></div>
+      <div class="app-loading__particles">
+        <div class="app-loading__particle"></div>
+        <div class="app-loading__particle"></div>
+        <div class="app-loading__particle"></div>
+        <div class="app-loading__particle"></div>
+        <div class="app-loading__particle"></div>
+        <div class="app-loading__particle"></div>
+      </div>
+      <div class="app-loading__center">
+        <div class="app-loading__logo-wrap">
+          <div class="app-loading__glow"></div>
+          <div class="app-loading__ripple"></div>
+          <div class="app-loading__ripple"></div>
+          <div class="app-loading__ripple"></div>
+          <div class="app-loading__ring"></div>
+          <div class="app-loading__logo">
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              stroke="#d97757"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+            </svg>
+          </div>
         </div>
-        <div class="app-loading__center">
-          <div class="app-loading__logo-wrap">
-            <div class="app-loading__glow"></div>
-            <div class="app-loading__ripple"></div>
-            <div class="app-loading__ripple"></div>
-            <div class="app-loading__ripple"></div>
-            <div class="app-loading__ring"></div>
-            <div class="app-loading__logo">
-              <img src="/logo.png" alt="" />
-            </div>
-          </div>
-          <div class="app-loading__dots">
-            <div class="app-loading__dot"></div>
-            <div class="app-loading__dot"></div>
-            <div class="app-loading__dot"></div>
-          </div>
+        <div class="app-loading__dots">
+          <div class="app-loading__dot"></div>
+          <div class="app-loading__dot"></div>
+          <div class="app-loading__dot"></div>
         </div>
       </div>
     </div>

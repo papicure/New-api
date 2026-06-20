@@ -174,4 +174,11 @@ if (!rootElement.innerHTML) {
       </QueryClientProvider>
     </StrictMode>
   )
+  // Remove the first-paint loading overlay now that React has mounted.
+  const loadingOverlay = document.getElementById('app-loading')
+  if (loadingOverlay) {
+    loadingOverlay.style.transition = 'opacity 0.4s ease'
+    loadingOverlay.style.opacity = '0'
+    setTimeout(() => loadingOverlay.remove(), 400)
+  }
 }
