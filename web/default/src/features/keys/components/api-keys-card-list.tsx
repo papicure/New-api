@@ -17,7 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { type Row } from '@tanstack/react-table'
-import { CalendarClock, CreditCard, Layers, TrendingUp } from 'lucide-react'
+import {
+  CalendarClock,
+  CheckCircle2,
+  CreditCard,
+  Layers,
+  PauseCircle,
+  TrendingUp,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -40,14 +47,14 @@ function InfoItem(props: {
   return (
     <div className='flex min-w-0 items-start gap-2'>
       <Icon
-        className='text-muted-foreground mt-0.5 size-3.5 shrink-0'
+        className='text-muted-foreground mt-0.5 size-4 shrink-0'
         aria-hidden='true'
       />
       <div className='min-w-0'>
-        <div className='text-muted-foreground text-[11px] font-medium'>
+        <div className='text-muted-foreground text-xs font-medium'>
           {props.label}
         </div>
-        <div className='truncate text-xs font-medium'>{props.children}</div>
+        <div className='truncate text-sm font-medium'>{props.children}</div>
       </div>
     </div>
   )
@@ -92,12 +99,22 @@ function ApiKeyDetailCard({
           )}
           <span
             className={cn(
-              'size-2 shrink-0 rounded-full',
-              isEnabled ? 'bg-success' : 'bg-muted-foreground/40'
+              'flex size-7 shrink-0 items-center justify-center rounded-full',
+              isEnabled
+                ? 'bg-success/10 text-success'
+                : 'bg-muted text-muted-foreground'
             )}
             aria-hidden='true'
-          />
-          <span className='truncate text-sm font-semibold'>{apiKey.name}</span>
+          >
+            {isEnabled ? (
+              <CheckCircle2 className='size-4' />
+            ) : (
+              <PauseCircle className='size-4' />
+            )}
+          </span>
+          <span className='truncate text-base font-semibold'>
+            {apiKey.name}
+          </span>
           {statusConfig && (
             <StatusBadge
               label={t(statusConfig.label)}

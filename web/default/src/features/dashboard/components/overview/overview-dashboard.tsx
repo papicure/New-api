@@ -35,17 +35,17 @@ import {
   CardStaggerContainer,
   CardStaggerItem,
 } from '@/components/page-transition'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { UserMascotAvatar } from '@/components/user-mascot-avatar'
 import { useTheme } from '@/context/theme-provider'
 import { getUserQuotaDates } from '@/features/dashboard/api'
 import { processChartData } from '@/features/dashboard/lib'
 import { getApiKeys } from '@/features/keys/api'
 import { useStatus } from '@/hooks/use-status'
 import { useUserDisplay } from '@/hooks/use-user-display'
-import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { formatNumber, formatQuota } from '@/lib/format'
 import { ROLE } from '@/lib/roles'
 import { computeTimeRange } from '@/lib/time'
@@ -61,8 +61,6 @@ import { ApiInfoPanel } from './api-info-panel'
 import { FAQPanel } from './faq-panel'
 import { PerformanceHealthPanel } from './performance-health-panel'
 import { UptimePanel } from './uptime-panel'
-
-const avatarFallbackClassName = 'font-semibold text-white'
 
 let themeManagerPromise: Promise<
   (typeof import('@visactor/vchart'))['ThemeManager']
@@ -157,11 +155,6 @@ function UserInfoCard() {
   const user = useAuthStore((state) => state.auth.user)
   const { displayName, secondaryText } = useUserDisplay(user)
   const avatarName = user?.username || displayName
-  const avatarFallback = getUserAvatarFallback(avatarName)
-  const avatarStyle = useMemo(
-    () => getUserAvatarStyle(avatarName),
-    [avatarName]
-  )
   const isActive = (user?.status ?? 1) === 1
   const roleLabel = user?.role && user.role >= ROLE.ADMIN ? 'Admin' : 'User'
 
@@ -171,12 +164,7 @@ function UserInfoCard() {
 
       <div className='mt-4 flex items-center gap-3'>
         <Avatar className='size-12'>
-          <AvatarFallback
-            className={avatarFallbackClassName}
-            style={avatarStyle}
-          >
-            {avatarFallback}
-          </AvatarFallback>
+          <UserMascotAvatar name={avatarName} />
         </Avatar>
         <div className='min-w-0'>
           <div className='truncate text-sm font-semibold'>{displayName}</div>

@@ -8,6 +8,39 @@
     <!-- Primary Meta Tags -->
     <title>New API</title>
     <meta name="title" content="New API" />
+    <!--
+      Apply the cached system name synchronously, before the app bundle loads,
+      so a custom site name does not flash the default "New API" on refresh.
+      "New API" stays as the static default for first-ever visits / no cache.
+    -->
+    <script>
+      (function () {
+        try {
+          var name = '';
+          var status = localStorage.getItem('status');
+          if (status) {
+            var s = JSON.parse(status);
+            if (s && s.system_name) name = s.system_name;
+          }
+          if (!name) {
+            var cfg = localStorage.getItem('system-config-storage');
+            if (cfg) {
+              var c = JSON.parse(cfg);
+              if (c && c.state && c.state.config && c.state.config.systemName) {
+                name = c.state.config.systemName;
+              }
+            }
+          }
+          if (name) {
+            document.title = name;
+            var meta = document.querySelector('meta[name="title"]');
+            if (meta) meta.setAttribute('content', name);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
     <meta
       name="description"
       content="Unified AI API gateway and admin dashboard."

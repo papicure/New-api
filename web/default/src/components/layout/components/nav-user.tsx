@@ -18,11 +18,11 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useNavigate } from '@tanstack/react-router'
 import { ChevronsUpDown, Home, LogOut, Settings, User, Wallet } from 'lucide-react'
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SignOutDialog } from '@/components/sign-out-dialog'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar } from '@/components/ui/avatar'
+import { UserMascotAvatar } from '@/components/user-mascot-avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,11 +39,8 @@ import {
 } from '@/components/ui/sidebar'
 import useDialogState from '@/hooks/use-dialog'
 import { useUserDisplay } from '@/hooks/use-user-display'
-import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import { ROLE } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
-
-const avatarFallbackClassName = 'font-semibold text-white'
 
 /**
  * Sidebar bottom user card.
@@ -65,11 +62,6 @@ export function NavUser() {
   const { displayName, secondaryText, roleLabel } = useUserDisplay(user)
   const isSuperAdmin = user?.role === ROLE.SUPER_ADMIN
   const avatarName = user?.username || displayName
-  const avatarFallback = getUserAvatarFallback(avatarName)
-  const avatarFallbackStyle = useMemo(
-    () => getUserAvatarStyle(avatarName),
-    [avatarName]
-  )
 
   return (
     <SidebarFooter className='border-sidebar-border border-t p-2'>
@@ -85,12 +77,7 @@ export function NavUser() {
               }
             >
               <Avatar className='size-8 shrink-0 rounded-md'>
-                <AvatarFallback
-                  className={`${avatarFallbackClassName} rounded-md text-xs`}
-                  style={avatarFallbackStyle}
-                >
-                  {avatarFallback}
-                </AvatarFallback>
+                <UserMascotAvatar name={avatarName} className='rounded-md' />
               </Avatar>
               <div className='grid flex-1 text-start text-sm leading-tight'>
                 <span className='truncate font-medium'>{displayName}</span>
@@ -108,12 +95,7 @@ export function NavUser() {
             >
               <div className='flex items-center gap-2 px-1.5 py-1.5'>
                 <Avatar className='size-8 rounded-md'>
-                  <AvatarFallback
-                    className={`${avatarFallbackClassName} rounded-md text-xs`}
-                    style={avatarFallbackStyle}
-                  >
-                    {avatarFallback}
-                  </AvatarFallback>
+                  <UserMascotAvatar name={avatarName} className='rounded-md' />
                 </Avatar>
                 <div className='flex flex-1 flex-col gap-0.5 overflow-hidden'>
                   <p className='text-foreground truncate text-sm font-medium'>
