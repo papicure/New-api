@@ -17,12 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
-import { KeyRound, Plus, Search } from 'lucide-react'
-import { useState } from 'react'
+import { KeyRound, Plus, Search, Trash2, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Empty,
   EmptyDescription,
@@ -37,6 +38,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { getApiKeys, searchApiKeys } from '../api'
 import { ERROR_MESSAGES } from '../constants'
 import { type ApiKey } from '../types'
+import { ApiKeysBatchDeleteDialog } from './api-keys-batch-delete-dialog'
 import { ApiKeysCardList } from './api-keys-card-list'
 import { ApiKeysGroupsGrid } from './api-keys-groups-grid'
 import { useApiKeys } from './api-keys-provider'
@@ -82,6 +84,48 @@ export function ApiKeysOverview() {
   const apiKeys = data?.items ?? []
   const total = data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [batchDeleteOpen, setBatchDeleteOpen] = useState(false)
+
+  // Drop selections that no longer exist on the current page (after paging,
+  // searching, or a refresh) so the count and batch action stay accurate.
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === 0) return prev
+      const visible = new Set(apiKeys.map((key) => key.id))
+      const next = new Set<number>()
+      for (const id of prev) {
+        if (visible.has(id)) next.add(id)
+      }
+      return next.size === prev.size ? prev : next
+    })
+  }, [apiKeys])
+
+  const allSelected = apiKeys.length > 0 && selectedIds.size === apiKeys.length
+  const selectedIdList = useMemo(() => Array.from(selectedIds), [selectedIds])
+
+  const toggleSelect = (id: number, checked: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (checked) {
+        next.add(id)
+      } else {
+        next.delete(id)
+      }
+      return next
+    })
+  }
+
+  const toggleSelectAll = (checked: boolean) => {
+    setSelectedIds(checked ? new Set(apiKeys.map((key) => key.id)) : new Set())
+  }
+
+  const exitSelectMode = () => {
+    setSelectMode(false)
+    setSelectedIds(new Set())
+  }
 
   return (
     <div className='flex flex-col gap-4'>
@@ -130,20 +174,68 @@ export function ApiKeysOverview() {
               </p>
             </div>
           </div>
-          <div className='relative w-full sm:w-64'>
-            <Search className='text-muted-foreground absolute start-2.5 top-1/2 size-4 -translate-y-1/2' />
-            <Input
-              placeholder={t('Filter by name...')}
-              aria-label={t('Filter by name...')}
-              value={searchInput}
-              onChange={(e) => {
-                setPage(1)
-                setSearchInput(e.target.value)
-              }}
-              className='ps-8'
-            />
+          <div className='flex w-full items-center gap-2 sm:w-auto'>
+            <div className='relative w-full sm:w-64'>
+              <Search className='text-muted-foreground absolute start-2.5 top-1/2 size-4 -translate-y-1/2' />
+              <Input
+                placeholder={t('Filter by name...')}
+                aria-label={t('Filter by name...')}
+                value={searchInput}
+                onChange={(e) => {
+                  setPage(1)
+                  setSearchInput(e.target.value)
+                }}
+                className='ps-8'
+              />
+            </div>
+            {selectMode ? (
+              <Button
+                variant='outline'
+                size='sm'
+                className='shrink-0'
+                onClick={exitSelectMode}
+              >
+                <X data-icon='inline-start' />
+                {t('Cancel')}
+              </Button>
+            ) : (
+              <Button
+                variant='outline'
+                size='sm'
+                className='shrink-0'
+                disabled={apiKeys.length === 0}
+                onClick={() => setSelectMode(true)}
+              >
+                {t('Select')}
+              </Button>
+            )}
           </div>
         </div>
+
+        {selectMode && apiKeys.length > 0 && (
+          <div className='bg-muted/40 mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-3 py-2'>
+            <label className='flex cursor-pointer items-center gap-2 text-sm'>
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={(value) => toggleSelectAll(value === true)}
+                aria-label={t('Select all')}
+              />
+              <span>{t('Select all')}</span>
+              <span className='text-muted-foreground'>
+                {t('{{count}} selected', { count: selectedIds.size })}
+              </span>
+            </label>
+            <Button
+              variant='destructive'
+              size='sm'
+              disabled={selectedIds.size === 0}
+              onClick={() => setBatchDeleteOpen(true)}
+            >
+              <Trash2 data-icon='inline-start' />
+              {t('Delete')}
+            </Button>
+          </div>
+        )}
 
         {isLoading ? (
           <div className='grid gap-3'>
@@ -152,7 +244,12 @@ export function ApiKeysOverview() {
             ))}
           </div>
         ) : apiKeys.length > 0 ? (
-          <ApiKeysCardList apiKeys={apiKeys} />
+          <ApiKeysCardList
+            apiKeys={apiKeys}
+            selectable={selectMode}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+          />
         ) : (
           <Empty className='border-none py-10'>
             <EmptyHeader>
@@ -193,6 +290,13 @@ export function ApiKeysOverview() {
           </div>
         )}
       </section>
+
+      <ApiKeysBatchDeleteDialog
+        open={batchDeleteOpen}
+        onOpenChange={setBatchDeleteOpen}
+        ids={selectedIdList}
+        onDeleted={exitSelectMode}
+      />
     </div>
   )
 }

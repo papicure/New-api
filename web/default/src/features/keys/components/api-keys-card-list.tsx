@@ -17,15 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { type Row } from '@tanstack/react-table'
-import {
-  CalendarClock,
-  CreditCard,
-  Layers,
-  TrendingUp,
-} from 'lucide-react'
+import { CalendarClock, CreditCard, Layers, TrendingUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { StatusBadge } from '@/components/status-badge'
 import { formatQuota, formatTimestampToDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -57,7 +53,17 @@ function InfoItem(props: {
   )
 }
 
-function ApiKeyDetailCard({ apiKey }: { apiKey: ApiKey }) {
+function ApiKeyDetailCard({
+  apiKey,
+  selectable,
+  selected,
+  onSelectChange,
+}: {
+  apiKey: ApiKey
+  selectable: boolean
+  selected: boolean
+  onSelectChange: (checked: boolean) => void
+}) {
   const { t } = useTranslation()
   const statusConfig = API_KEY_STATUSES[apiKey.status]
   const isEnabled = apiKey.status === API_KEY_STATUS.ENABLED
@@ -70,11 +76,20 @@ function ApiKeyDetailCard({ apiKey }: { apiKey: ApiKey }) {
     <div
       className={cn(
         'bg-card rounded-xl border p-4 shadow-xs transition-colors',
-        !isEnabled && 'opacity-70'
+        !isEnabled && 'opacity-70',
+        selected && 'border-primary/50 ring-primary/20 ring-1'
       )}
     >
       <div className='flex items-start justify-between gap-3'>
         <div className='flex min-w-0 items-center gap-2.5'>
+          {selectable && (
+            <Checkbox
+              checked={selected}
+              onCheckedChange={(value) => onSelectChange(value === true)}
+              aria-label={t('Select API key')}
+              className='shrink-0'
+            />
+          )}
           <span
             className={cn(
               'size-2 shrink-0 rounded-full',
@@ -151,11 +166,27 @@ function ApiKeyDetailCard({ apiKey }: { apiKey: ApiKey }) {
   )
 }
 
-export function ApiKeysCardList({ apiKeys }: { apiKeys: ApiKey[] }) {
+export function ApiKeysCardList({
+  apiKeys,
+  selectable = false,
+  selectedIds,
+  onToggleSelect,
+}: {
+  apiKeys: ApiKey[]
+  selectable?: boolean
+  selectedIds?: Set<number>
+  onToggleSelect?: (id: number, checked: boolean) => void
+}) {
   return (
     <div className='grid gap-3'>
       {apiKeys.map((apiKey) => (
-        <ApiKeyDetailCard key={apiKey.id} apiKey={apiKey} />
+        <ApiKeyDetailCard
+          key={apiKey.id}
+          apiKey={apiKey}
+          selectable={selectable}
+          selected={selectedIds?.has(apiKey.id) ?? false}
+          onSelectChange={(checked) => onToggleSelect?.(apiKey.id, checked)}
+        />
       ))}
     </div>
   )

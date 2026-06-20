@@ -1,4 +1,7 @@
 {
   "Groups define model access, billing source, and base rate": "Groups define model access, billing source, and base rate",
-  "Manage keys, group order, and budget": "Manage keys, group order, and budget"
+  "Manage keys, group order, and budget": "Manage keys, group order, and budget",
+  "Daily spending over the last 30 days": "Daily spending over the last 30 days",
+  "Run into onboarding, billing, or plan questions? Check the docs or revisit the console.": "Run into onboarding, billing, or plan questions? Check the docs or revisit the console.",
+  "Subscription and quota": "Subscription and quota"
 }
