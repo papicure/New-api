@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
+
+import { PageTransition } from '@/components/page-transition'
+
 import { AuthLayout } from '../auth-layout'
 import { SignUpForm } from './components/sign-up-form'
 
@@ -24,15 +27,17 @@ export function SignUp() {
   const { t } = useTranslation()
 
   return (
-    <AuthLayout
-      mode='sign-up'
-      showTabs
-      title={t('Welcome back')}
-      subtitle={t('Email registration')}
-    >
-      <div className='w-full'>
-        <SignUpForm />
-      </div>
-    </AuthLayout>
+    <PageTransition>
+      <AuthLayout
+        mode='sign-up'
+        showTabs
+        title={t('Welcome back')}
+        subtitle={t('Email registration')}
+      >
+        <div className='w-full'>
+          <SignUpForm />
+        </div>
+      </AuthLayout>
+    </PageTransition>
   )
 }

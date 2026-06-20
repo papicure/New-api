@@ -32,15 +32,17 @@ import {
   LogIn,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+
+import { Dialog } from '@/components/dialog'
+import { StatusBadge, type StatusBadgeProps } from '@/components/status-badge'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { DynamicPricingBreakdown } from '@/features/pricing/components/dynamic-pricing-breakdown'
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { formatBillingCurrencyFromUSD } from '@/lib/currency'
 import { formatLogQuota, formatTokens, formatUseTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Dialog } from '@/components/dialog'
-import { StatusBadge, type StatusBadgeProps } from '@/components/status-badge'
-import { DynamicPricingBreakdown } from '@/features/pricing/components/dynamic-pricing-breakdown'
+
 import type { UsageLog } from '../../data/schema'
 import {
   parseLogOther,
@@ -125,9 +127,7 @@ function DetailSection(props: {
       <div
         className={cn(
           'min-w-0 space-y-1 overflow-hidden rounded-md border p-2.5 max-sm:p-2',
-          isDanger
-            ? 'border-destructive/25 bg-destructive/10'
-            : 'bg-muted/30'
+          isDanger ? 'border-destructive/25 bg-destructive/10' : 'bg-muted/30'
         )}
       >
         {props.children}

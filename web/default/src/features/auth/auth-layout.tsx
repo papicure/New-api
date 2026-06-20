@@ -18,10 +18,11 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
-import { useSystemConfig } from '@/hooks/use-system-config'
+
 import { Skeleton } from '@/components/ui/skeleton'
 import { HeroTerminalDemo } from '@/features/home/components/hero-terminal-demo'
+import { useSystemConfig } from '@/hooks/use-system-config'
+import { cn } from '@/lib/utils'
 
 type AuthMode = 'sign-in' | 'sign-up'
 
@@ -41,8 +42,7 @@ export function AuthLayout(props: AuthLayoutProps) {
   const subtitle =
     props.subtitle ??
     (mode === 'sign-up' ? t('Email registration') : t('Password login'))
-  const rightAccent =
-    mode === 'sign-up' ? t('experience') : t('coding journey')
+  const rightAccent = mode === 'sign-up' ? t('experience') : t('coding journey')
 
   return (
     <div className='bg-background grid min-h-svh lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]'>
@@ -107,10 +107,11 @@ export function AuthLayout(props: AuthLayoutProps) {
         </div>
       </main>
 
-      <aside className='from-card to-background relative hidden min-h-svh items-center justify-center overflow-hidden border-l border-border/60 bg-gradient-to-br px-10 lg:flex'>
+      <aside className='from-card to-background border-border/60 relative hidden min-h-svh items-center justify-center overflow-hidden border-l bg-gradient-to-br px-10 lg:flex'>
+        <div aria-hidden className='bg-dot-grid absolute inset-0' />
         <div
           aria-hidden
-          className='bg-primary/10 absolute inset-y-20 right-10 left-24 rounded-full blur-3xl'
+          className='terminal-demo-pulse bg-primary/10 absolute inset-y-20 right-10 left-24 rounded-full blur-3xl'
         />
         <div className='relative w-full max-w-lg'>
           <h2 className='font-serif text-4xl leading-tight font-semibold text-balance'>
@@ -127,7 +128,7 @@ export function AuthLayout(props: AuthLayoutProps) {
             {['Claude Code', 'Codex', 'Gemini CLI'].map((label) => (
               <span
                 key={label}
-                className='bg-card text-muted-foreground rounded-full border border-border/60 px-4 py-2 text-xs shadow-soft'
+                className='bg-card text-muted-foreground hover:text-foreground border-border/60 shadow-soft hover:shadow-soft-lg rounded-full border px-4 py-2 font-mono text-xs transition-[color,transform,box-shadow] duration-150 hover:-translate-y-0.5'
               >
                 {label}
               </span>

@@ -23,6 +23,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
+
 import { Main } from './main'
 import { PageFooterProvider } from './page-footer'
 
@@ -92,7 +93,7 @@ export function SectionPageLayout(props: SectionPageLayoutProps) {
           )}
           <div className='flex flex-wrap items-end justify-between gap-x-4 gap-y-3'>
             <div className='min-w-0 flex-1'>
-              <h1 className='font-serif text-2xl leading-tight font-semibold text-balance text-foreground sm:text-3xl'>
+              <h1 className='text-foreground font-serif text-2xl leading-tight font-semibold text-balance sm:text-3xl'>
                 {title}
               </h1>
               {description != null && (

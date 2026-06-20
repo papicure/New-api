@@ -16,13 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Fragment, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { FileText, MessageCircle, Receipt, ShieldCheck } from 'lucide-react'
+import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
-import { useSystemConfig } from '@/hooks/use-system-config'
+
 import { useStatus } from '@/hooks/use-status'
+import { useSystemConfig } from '@/hooks/use-system-config'
+import { cn } from '@/lib/utils'
 
 interface FooterLink {
   text: string
@@ -59,7 +60,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
         href={props.link.href}
         target='_blank'
         rel='noopener noreferrer'
-        className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+        className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200 hover:underline hover:underline-offset-4'
       >
         {label}
       </a>
@@ -69,11 +70,52 @@ function FooterLinkItem(props: { link: FooterLink }) {
   return (
     <Link
       to={props.link.href}
-      className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+      className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200 hover:underline hover:underline-offset-4'
     >
       {label}
     </Link>
   )
+}
+
+function parseFooterColumns(
+  value: string | undefined
+): FooterColumnProps[] | null {
+  if (!value) return null
+
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (!Array.isArray(parsed)) return null
+
+    const columns = parsed
+      .map((item): FooterColumnProps | null => {
+        if (!item || typeof item !== 'object') return null
+        const raw = item as Record<string, unknown>
+        if (typeof raw.title !== 'string' || !Array.isArray(raw.links)) {
+          return null
+        }
+
+        const links = raw.links
+          .map((link): FooterLink | null => {
+            if (!link || typeof link !== 'object') return null
+            const rawLink = link as Record<string, unknown>
+            if (
+              typeof rawLink.text !== 'string' ||
+              typeof rawLink.href !== 'string'
+            ) {
+              return null
+            }
+            return { text: rawLink.text, href: rawLink.href }
+          })
+          .filter((link): link is FooterLink => Boolean(link))
+
+        return links.length > 0 ? { title: raw.title, links } : null
+      })
+      .filter((item): item is FooterColumnProps => Boolean(item))
+
+    return columns.length > 0 ? columns : null
+  } catch {
+    return null
+  }
 }
 
 // Renders User Agreement / Privacy Policy links inline with the parent's
@@ -155,6 +197,9 @@ export function Footer(props: FooterProps) {
     systemName,
     logo: systemLogo,
     footerHtml,
+    footerColumns,
+    footerDescription,
+    footerContact,
   } = useSystemConfig()
 
   const displayLogo = systemLogo || props.logo || '/logo.png'
@@ -193,7 +238,7 @@ export function Footer(props: FooterProps) {
           },
           {
             text: 'API keys',
-            href: '/keys',
+            href: '/sign-up',
           },
         ],
       },
@@ -206,11 +251,11 @@ export function Footer(props: FooterProps) {
           },
           {
             text: 'Model pricing',
-            href: '/models',
+            href: '/pricing',
           },
           {
             text: 'Wallet',
-            href: '/wallet',
+            href: '/pricing',
           },
         ],
       },
@@ -218,7 +263,11 @@ export function Footer(props: FooterProps) {
     []
   )
 
-  const displayColumns = props.columns ?? fallbackColumns
+  const configuredColumns = useMemo(
+    () => parseFooterColumns(footerColumns),
+    [footerColumns]
+  )
+  const displayColumns = props.columns ?? configuredColumns ?? fallbackColumns
 
   if (footerHtml) {
     return (
@@ -263,13 +312,16 @@ export function Footer(props: FooterProps) {
               </span>
             </Link>
             <p className='text-muted-foreground mt-5 max-w-sm text-sm leading-7'>
-              {t(
-                'Enterprise AI coding platform with Claude Code, Codex, Gemini CLI and other AI coding tools.'
-              )}
+              {footerDescription ||
+                t(
+                  'Enterprise AI coding platform with Claude Code, Codex, Gemini CLI and other AI coding tools.'
+                )}
             </p>
-            <div className='border-border/70 bg-card mt-6 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm shadow-soft'>
+            <div className='border-border/70 bg-card shadow-soft mt-6 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm'>
               <MessageCircle className='text-primary' />
-              <span>{t('QQ community group')}: 971885281</span>
+              <span>
+                {footerContact || `${t('QQ community group')}: 971885281`}
+              </span>
             </div>
           </div>
 

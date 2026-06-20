@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useCallback } from 'react'
+
+import { DEFAULT_SYSTEM_NAME, DEFAULT_LOGO } from '@/lib/constants'
+import { applyFaviconToDom } from '@/lib/dom-utils'
 import {
   useSystemConfigStore,
   type CurrencyConfig,
@@ -24,8 +27,6 @@ import {
   type SystemConfig,
   DEFAULT_CURRENCY_CONFIG,
 } from '@/stores/system-config-store'
-import { DEFAULT_SYSTEM_NAME, DEFAULT_LOGO } from '@/lib/constants'
-import { applyFaviconToDom } from '@/lib/dom-utils'
 
 interface UseSystemConfigOptions {
   /** Automatically fetch config from backend (use only in root component) */
@@ -38,6 +39,9 @@ interface StatusApiResponse {
     system_name?: string
     logo?: string
     footer_html?: string
+    footer_columns?: string
+    footer_description?: string
+    footer_contact?: string
     demo_site_enabled?: boolean
     display_token_stat_enabled?: boolean
     display_in_currency?: boolean
@@ -95,6 +99,9 @@ export function mapStatusDataToConfig(
     systemName: data.system_name || DEFAULT_SYSTEM_NAME,
     logo: data.logo || DEFAULT_LOGO,
     footerHtml: data.footer_html,
+    footerColumns: data.footer_columns,
+    footerDescription: data.footer_description,
+    footerContact: data.footer_contact,
     demoSiteEnabled: data.demo_site_enabled,
     displayTokenStatEnabled: data.display_token_stat_enabled,
     currency,

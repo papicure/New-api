@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useTranslation } from 'react-i18next'
+
 import { SettingsPageTitleStatusPortal } from './settings-page-context'
 
 type FormDirtyIndicatorProps = {
@@ -41,7 +42,7 @@ export function FormDirtyIndicator({
 
   return (
     <SettingsPageTitleStatusPortal>
-      <span className='text-warning inline-flex h-5 items-center gap-1.5 rounded-full bg-warning/10 px-2 text-[11px] font-medium whitespace-nowrap ring-1 ring-warning/20 ring-inset'>
+      <span className='text-warning bg-warning/10 ring-warning/20 inline-flex h-5 items-center gap-1.5 rounded-full px-2 text-[11px] font-medium whitespace-nowrap ring-1 ring-inset'>
         <span className='bg-warning size-1.5 rounded-full' />
         {message ? t(message) : t('Unsaved changes')}
       </span>

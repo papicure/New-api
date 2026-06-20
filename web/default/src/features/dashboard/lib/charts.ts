@@ -16,14 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { getCurrencyDisplay } from '@/lib/currency'
-import { formatChartTime, type TimeGranularity } from '@/lib/time'
 import { MAX_CHART_TREND_POINTS } from '@/features/dashboard/constants'
 import type {
   QuotaDataItem,
   ProcessedChartData,
   ProcessedUserChartData,
 } from '@/features/dashboard/types'
+import { getCurrencyDisplay } from '@/lib/currency'
+import { formatChartTime, type TimeGranularity } from '@/lib/time'
 
 type TFunction = (key: string) => string
 type TooltipLineItem = {
@@ -465,8 +465,16 @@ export function processChartData(
         style:
           chartCornerRadius == null ? {} : { cornerRadius: chartCornerRadius },
         state: {
-          hover: { outerRadius: 0.85, stroke: 'var(--foreground)', lineWidth: 1 },
-          selected: { outerRadius: 0.85, stroke: 'var(--foreground)', lineWidth: 1 },
+          hover: {
+            outerRadius: 0.85,
+            stroke: 'var(--foreground)',
+            lineWidth: 1,
+          },
+          selected: {
+            outerRadius: 0.85,
+            stroke: 'var(--foreground)',
+            lineWidth: 1,
+          },
         },
       },
       title: {

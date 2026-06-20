@@ -16,9 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import type { UseFormReturn } from 'react-hook-form'
 import { ShieldCheck } from 'lucide-react'
+import type { UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+
+import { PasswordInput } from '@/components/password-input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   FormControl,
@@ -28,7 +30,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/password-input'
+
 import type { SetupFormValues } from '../types'
 
 interface AdminStepProps {
@@ -42,7 +44,7 @@ export function AdminStep({ form, rootInitialized }: AdminStepProps) {
     return (
       <Alert className='border-info/30 bg-info/10'>
         <AlertDescription className='flex items-start gap-2'>
-          <ShieldCheck className='mt-0.5 size-4 text-info' />
+          <ShieldCheck className='text-info mt-0.5 size-4' />
           {t(
             'The administrator account is already initialized. You can keep your existing credentials and continue to the next step.'
           )}

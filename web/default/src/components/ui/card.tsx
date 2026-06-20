@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import * as React from 'react'
+
 import { cn } from '@/lib/utils'
 
 function Card({
@@ -29,7 +30,7 @@ function Card({
       data-slot='card'
       data-size={size}
       className={cn(
-        'group/card bg-card text-card-foreground shadow-soft flex flex-col gap-4 overflow-hidden rounded-xl border border-border/70 py-4 text-sm transition-[border-color,box-shadow,transform] has-data-[slot=card-footer]:pb-0 hover:-translate-y-0.5 hover:border-border hover:shadow-soft-lg has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl',
+        'group/card bg-card text-card-foreground shadow-soft relative flex flex-col gap-4 overflow-hidden rounded-xl border border-border/70 py-4 text-sm transition-[border-color,box-shadow,transform] before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-primary/35 has-data-[slot=card-footer]:pb-0 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-soft-lg has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl',
         className
       )}
       {...props}

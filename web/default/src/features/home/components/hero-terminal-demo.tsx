@@ -16,155 +16,274 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { cn } from '@/lib/utils'
+
+type SegmentTone =
+  | 'prompt'
+  | 'command'
+  | 'keyword'
+  | 'function'
+  | 'muted'
+  | 'success'
+  | 'info'
+
+type TerminalSegment = {
+  text: string
+  tone?: SegmentTone
+}
+
+type TerminalLine = {
+  indent?: number
+  segments: TerminalSegment[]
+}
 
 interface HeroTerminalDemoProps {
   className?: string
   variant?: 'home' | 'auth'
 }
 
+const TYPE_SPEED_MS = 22
+
 export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
   const { t } = useTranslation()
   const variant = props.variant ?? 'home'
-  const lines =
-    variant === 'auth'
-      ? [
-          <CodeLine key='version'>
-            <Prompt>$</Prompt> <Command>claude --version</Command>
-          </CodeLine>,
-          <CodeLine key='version-output'>
-            <Muted>Claude Code v1.0.87</Muted>
-          </CodeLine>,
-          <CodeLine key='ask'>
-            <Prompt>$</Prompt>{' '}
-            <Command>
-              claude &quot;{t('Write a quicksort algorithm')}&quot;
-            </Command>
-          </CodeLine>,
-          <CodeLine key='connected'>
-            <Success>✓</Success>{' '}
-            <Muted>
-              {t('Connected to Claude Code, generating now...')}
-            </Muted>
-          </CodeLine>,
-          <CodeLine key='cursor'>
-            <Prompt>$</Prompt> <Cursor />
-          </CodeLine>,
-        ]
-      : [
-          <CodeLine key='think'>
-            <Muted>&gt;</Muted> <Command>Think harder...</Command> <Cursor />
-          </CodeLine>,
-          <CodeLine key='space'>
-            <Muted> </Muted>
-          </CodeLine>,
-          <CodeLine key='while'>
-            <Keyword>while</Keyword>
-            <Muted>(curious) {'{'}</Muted>
-          </CodeLine>,
-          <CodeLine key='question' indent={2}>
-            <FunctionName>question_everything</FunctionName>
-            <Muted>();</Muted>
-          </CodeLine>,
-          <CodeLine key='dig' indent={2}>
-            <FunctionName>dig_deeper</FunctionName>
-            <Muted>();</Muted>
-          </CodeLine>,
-          <CodeLine key='connect' indent={2}>
-            <FunctionName>connect_dots</FunctionName>
-            <Muted>(unexpected);</Muted>
-          </CodeLine>,
-          <CodeLine key='while-close'>
-            <Muted>{'}'}</Muted>
-          </CodeLine>,
-          <CodeLine key='if'>
-            <Keyword>if</Keyword>
-            <Muted>(stuck) {'{'}</Muted>
-          </CodeLine>,
-          <CodeLine key='keep' indent={2}>
-            <FunctionName>keep_thinking</FunctionName>
-            <Muted>();</Muted>
-          </CodeLine>,
-          <CodeLine key='if-close'>
-            <Muted>{'}'}</Muted>
-          </CodeLine>,
-        ]
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [visibleChars, setVisibleChars] = useState(0)
+
+  const lines = useMemo<TerminalLine[]>(() => {
+    if (variant === 'auth') {
+      return [
+        line([segment('$ ', 'prompt'), segment('claude --version', 'command')]),
+        line([segment('Claude Code v1.0.87', 'muted')]),
+        line([
+          segment('$ ', 'prompt'),
+          segment('claude ', 'command'),
+          segment(`"${t('Write a quicksort algorithm')}"`, 'info'),
+        ]),
+        line([
+          segment('[ok] ', 'success'),
+          segment(t('Connected to Claude Code, generating now...'), 'muted'),
+        ]),
+        line([segment('$ ', 'prompt'), segment(t('session ready'), 'command')]),
+      ]
+    }
+
+    return [
+      line([segment('> ', 'muted'), segment(t('Think harder...'), 'command')]),
+      line([]),
+      line([segment('while', 'keyword'), segment('(curious) {', 'muted')]),
+      line(
+        [segment('question_everything', 'function'), segment('();', 'muted')],
+        2
+      ),
+      line([segment('dig_deeper', 'function'), segment('();', 'muted')], 2),
+      line(
+        [
+          segment('connect_dots', 'function'),
+          segment('(unexpected);', 'muted'),
+        ],
+        2
+      ),
+      line([segment('}', 'muted')]),
+      line([segment('if', 'keyword'), segment('(stuck) {', 'muted')]),
+      line([segment('keep_thinking', 'function'), segment('();', 'muted')], 2),
+      line([segment('}', 'muted')]),
+    ]
+  }, [t, variant])
+
+  const totalChars = useMemo(() => {
+    return lines.reduce((count, item, index) => {
+      const lineLength = getLineLength(item)
+      return count + lineLength + (index === lines.length - 1 ? 0 : 1)
+    }, 0)
+  }, [lines])
+
+  useEffect(() => {
+    const element = containerRef.current
+    if (!element) return
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduceMotion.matches) {
+      setVisibleChars(totalChars)
+      return
+    }
+
+    let intervalId: number | undefined
+    const startTyping = () => {
+      window.clearInterval(intervalId)
+      setVisibleChars(0)
+      intervalId = window.setInterval(() => {
+        setVisibleChars((current) => {
+          if (current >= totalChars) {
+            window.clearInterval(intervalId)
+            return totalChars
+          }
+          return current + 1
+        })
+      }, TYPE_SPEED_MS)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          startTyping()
+          observer.unobserve(element)
+        }
+      },
+      { threshold: 0.35 }
+    )
+    observer.observe(element)
+
+    return () => {
+      observer.disconnect()
+      window.clearInterval(intervalId)
+    }
+  }, [totalChars])
 
   return (
-    <div className={cn('mx-auto w-full max-w-md', props.className)}>
-      <div className='bg-neutral-foreground text-primary-foreground border-border/60 shadow-soft-lg overflow-hidden rounded-xl border'>
-        <div className='border-border/20 bg-background/10 flex h-10 items-center gap-2 border-b px-4'>
+    <div
+      ref={containerRef}
+      className={cn('mx-auto w-full max-w-md', props.className)}
+    >
+      <div className='terminal-panel text-primary-foreground border-border/60 shadow-soft-lg relative overflow-hidden rounded-xl border'>
+        <div
+          aria-hidden
+          className='bg-scanlines pointer-events-none absolute inset-0'
+        />
+        <div className='border-border/20 bg-background/10 relative flex h-10 items-center gap-2 border-b px-4'>
           <span className='bg-destructive size-3 rounded-full' />
           <span className='bg-warning size-3 rounded-full' />
           <span className='bg-success size-3 rounded-full' />
-          <span className='text-primary-foreground/40 ml-auto font-mono text-[10px] font-semibold tracking-wide'>
-            Terminal
+          <span className='text-primary-foreground/45 ml-auto font-mono text-[10px] font-semibold tracking-wide'>
+            {t('Terminal')}
           </span>
         </div>
 
-        <div className='p-5 font-mono text-[12px] leading-7 sm:p-6'>
+        <div className='relative p-5 font-mono text-[12px] leading-7 sm:p-6'>
           {variant === 'home' && (
             <div className='border-primary/40 bg-background/5 text-primary mb-5 inline-flex rounded-md border px-3 py-1 text-xs'>
-              * {t('Welcome to Claude Code')}
+              // {t('Welcome to Claude Code')}
             </div>
           )}
-          <div className='min-h-[11rem]'>{lines}</div>
+          <div className='min-h-[11rem]'>
+            {lines.map((item, index) => (
+              <CodeLine
+                key={`${variant}-${index}`}
+                line={item}
+                cursor={visibleChars < totalChars}
+                lineIndex={index}
+                visibleChars={visibleChars}
+                previousChars={getPreviousChars(lines, index)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-function CodeLine(props: { children: ReactNode; indent?: number }) {
+function line(segments: TerminalSegment[], indent = 0): TerminalLine {
+  return { indent, segments }
+}
+
+function segment(text: string, tone: SegmentTone): TerminalSegment {
+  return { text, tone }
+}
+
+function getLineLength(line: TerminalLine): number {
   return (
-    <div className='break-words whitespace-pre-wrap'>
-      {props.indent ? (
+    (line.indent ?? 0) +
+    line.segments.reduce((sum, item) => sum + item.text.length, 0)
+  )
+}
+
+function getPreviousChars(lines: TerminalLine[], index: number): number {
+  let count = 0
+  for (let i = 0; i < index; i++) {
+    count += getLineLength(lines[i]) + 1
+  }
+  return count
+}
+
+function CodeLine(props: {
+  line: TerminalLine
+  cursor: boolean
+  lineIndex: number
+  visibleChars: number
+  previousChars: number
+}) {
+  const lineLength = getLineLength(props.line)
+  const visibleOnLine = Math.max(
+    0,
+    Math.min(lineLength, props.visibleChars - props.previousChars)
+  )
+  const shouldShowLine = props.visibleChars >= props.previousChars
+  const hasCursor =
+    props.cursor &&
+    props.visibleChars >= props.previousChars &&
+    props.visibleChars <= props.previousChars + lineLength
+
+  if (!shouldShowLine) {
+    return <div className='min-h-[1.75rem]' />
+  }
+
+  let remaining = visibleOnLine
+  const indentWidth = props.line.indent ?? 0
+  if (indentWidth > 0) {
+    remaining = Math.max(0, remaining - indentWidth)
+  }
+
+  return (
+    <div className='min-h-[1.75rem] break-words whitespace-pre-wrap'>
+      {indentWidth > 0 && visibleOnLine > 0 ? (
         <span
           aria-hidden
           className='inline-block'
-          style={{ width: `${props.indent}ch` }}
+          style={{ width: `${indentWidth}ch` }}
         />
       ) : null}
-      {props.children}
+      {props.line.segments.map((item, index) => {
+        const visibleText = item.text.slice(0, Math.max(0, remaining))
+        remaining -= item.text.length
+        return (
+          <Tone key={`${props.lineIndex}-${index}`} tone={item.tone}>
+            {visibleText}
+          </Tone>
+        )
+      })}
+      {hasCursor ? <Cursor /> : null}
     </div>
   )
 }
 
-function Prompt(props: { children: ReactNode }) {
-  return <span className='text-success'>{props.children}</span>
-}
+function Tone(props: { children: ReactNode; tone?: SegmentTone }) {
+  let className = 'text-primary-foreground/55'
+  if (props.tone === 'prompt') {
+    className = 'text-success'
+  } else if (props.tone === 'command') {
+    className = 'text-primary-foreground font-semibold'
+  } else if (props.tone === 'keyword') {
+    className = 'text-primary font-semibold'
+  } else if (props.tone === 'function') {
+    className = 'text-info'
+  } else if (props.tone === 'success') {
+    className = 'text-success'
+  } else if (props.tone === 'info') {
+    className = 'text-primary'
+  }
 
-function Command(props: { children: ReactNode }) {
-  return (
-    <span className='text-primary-foreground font-semibold'>
-      {props.children}
-    </span>
-  )
-}
-
-function Keyword(props: { children: ReactNode }) {
-  return <span className='text-primary font-semibold'>{props.children}</span>
-}
-
-function FunctionName(props: { children: ReactNode }) {
-  return <span className='text-info'>{props.children}</span>
-}
-
-function Success(props: { children: ReactNode }) {
-  return <span className='text-success'>{props.children}</span>
-}
-
-function Muted(props: { children: ReactNode }) {
-  return <span className='text-primary-foreground/55'>{props.children}</span>
+  return <span className={className}>{props.children}</span>
 }
 
 function Cursor() {
   return (
     <span
       aria-hidden
-      className='bg-primary-foreground/70 inline-block h-4 w-2 translate-y-0.5 animate-pulse'
+      className='terminal-demo-blink bg-primary-foreground/70 ml-0.5 inline-block h-4 w-2 translate-y-0.5'
     />
   )
 }

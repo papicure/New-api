@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import { cva, type VariantProps } from 'class-variance-authority'
+
 import { cn } from '@/lib/utils'
 
 const badgeVariants = cva(
@@ -39,7 +40,7 @@ const badgeVariants = cva(
         neutral:
           'bg-neutral/10 text-neutral-foreground focus-visible:ring-neutral/20 dark:bg-neutral/20 dark:text-neutral dark:focus-visible:ring-neutral/40 [a]:hover:bg-neutral/20',
         outline:
-          'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
+          'border-border bg-background/50 font-mono text-[0.68rem] text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
         ghost:
           'hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50',
         link: 'text-primary underline-offset-4 hover:underline',

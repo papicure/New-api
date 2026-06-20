@@ -17,9 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { type ReactNode, type ElementType } from 'react'
-import { cn } from '@/lib/utils'
+
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 type StatCardTone = 'default' | 'success' | 'warning' | 'destructive' | 'info'
 
@@ -53,7 +54,7 @@ export function StatCard(props: StatCardProps) {
             <p className='text-muted-foreground text-sm font-medium'>
               {props.title}
             </p>
-            <p className='font-serif text-3xl leading-none font-semibold text-foreground tabular-nums'>
+            <p className='text-foreground font-serif text-3xl leading-none font-semibold tabular-nums'>
               {props.value}
             </p>
           </div>

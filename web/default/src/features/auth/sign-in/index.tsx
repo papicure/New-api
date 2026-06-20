@@ -18,7 +18,10 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useSearch } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+
+import { PageTransition } from '@/components/page-transition'
 import { useStatus } from '@/hooks/use-status'
+
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
 
@@ -28,17 +31,19 @@ export function SignIn() {
   const { status } = useStatus()
 
   return (
-    <AuthLayout
-      mode='sign-in'
-      showTabs={
-        !status?.self_use_mode_enabled && status?.register_enabled !== false
-      }
-      title={t('Welcome back')}
-      subtitle={t('Password login')}
-    >
-      <div className='w-full'>
-        <UserAuthForm redirectTo={redirect} />
-      </div>
-    </AuthLayout>
+    <PageTransition>
+      <AuthLayout
+        mode='sign-in'
+        showTabs={
+          !status?.self_use_mode_enabled && status?.register_enabled !== false
+        }
+        title={t('Welcome back')}
+        subtitle={t('Password login')}
+      >
+        <div className='w-full'>
+          <UserAuthForm redirectTo={redirect} />
+        </div>
+      </AuthLayout>
+    </PageTransition>
   )
 }

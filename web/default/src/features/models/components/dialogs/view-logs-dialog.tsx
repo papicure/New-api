@@ -160,7 +160,9 @@ export function ViewLogsDialog({
     )
   } else if (containers.length === 0) {
     logsContent = (
-      <div className='text-muted-foreground py-8 text-center'>{t('No containers')}</div>
+      <div className='text-muted-foreground py-8 text-center'>
+        {t('No containers')}
+      </div>
     )
   } else if (!containerId) {
     logsContent = (
@@ -170,7 +172,9 @@ export function ViewLogsDialog({
     )
   } else if (!logsText.trim()) {
     logsContent = (
-      <div className='text-muted-foreground py-8 text-center'>{t('No logs')}</div>
+      <div className='text-muted-foreground py-8 text-center'>
+        {t('No logs')}
+      </div>
     )
   } else {
     logsContent = (

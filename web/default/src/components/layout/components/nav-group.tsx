@@ -16,9 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { type ReactNode, useState, useEffect } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
+import { type ReactNode, useState, useEffect } from 'react'
+
 import { Badge } from '@/components/ui/badge'
 import {
   Collapsible,
@@ -45,6 +46,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+
 import { checkIsActive } from '../lib/url-utils'
 import {
   type NavCollapsible,
@@ -64,7 +66,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
 
   return (
     <SidebarGroup className='px-2 py-1.5'>
-      <SidebarGroupLabel className='px-2 text-[11px] font-semibold text-sidebar-foreground/55 uppercase'>
+      <SidebarGroupLabel className='text-sidebar-foreground/55 px-2 text-[11px] font-semibold uppercase'>
         {title}
       </SidebarGroupLabel>
       <SidebarMenu className='gap-1'>
@@ -235,7 +237,7 @@ function SidebarMenuCollapsedDropdown({
                 key={`${sub.title}-${sub.url}`}
                 render={
                   <Link
-                  to={sub.url}
+                    to={sub.url}
                     className={`${checkIsActive(href, sub) ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}`}
                   />
                 }

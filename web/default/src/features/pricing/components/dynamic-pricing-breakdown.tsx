@@ -16,13 +16,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useMemo } from 'react'
 import { Tag as TagIcon } from 'lucide-react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSystemConfigStore } from '@/stores/system-config-store'
-import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
+
 import { StaticDataTable } from '@/components/data-table'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { useSystemConfigStore } from '@/stores/system-config-store'
+
 import {
   BILLING_PRICING_VARS,
   MATCH_CONTAINS,
@@ -310,10 +312,7 @@ export function DynamicPricingBreakdown({
               const isMatched =
                 normalizedMatchedTierLabel !== '' &&
                 normalizeTierLabel(tier.label) === normalizedMatchedTierLabel
-              return cn(
-                isMatched &&
-                  'bg-success/10 hover:bg-success/10'
-              )
+              return cn(isMatched && 'bg-success/10 hover:bg-success/10')
             }}
             columns={[
               {

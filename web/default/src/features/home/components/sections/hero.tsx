@@ -19,8 +19,11 @@ For commercial licensing, please contact support@quantumnous.com
 import { Link } from '@tanstack/react-router'
 import { ArrowDown, ArrowRight, Sparkle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useStatus } from '@/hooks/use-status'
+
+import { AnimateInView } from '@/components/animate-in-view'
 import { Button } from '@/components/ui/button'
+import { useStatus } from '@/hooks/use-status'
+
 import { HeroTerminalDemo } from '../hero-terminal-demo'
 
 interface HeroProps {
@@ -36,11 +39,12 @@ export function Hero(props: HeroProps) {
 
   return (
     <section className='relative z-10 overflow-hidden px-6 pt-28 pb-20 md:pt-36 md:pb-28'>
+      <div aria-hidden className='bg-dot-grid absolute inset-0 -z-10' />
       <div className='mx-auto grid max-w-6xl grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,28rem)]'>
-        <div className='mx-auto flex max-w-xl flex-col items-start text-left lg:mx-0'>
-          <div className='border-border/70 bg-card text-primary mb-6 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-mono text-xs font-semibold tracking-wide shadow-soft'>
+        <AnimateInView className='mx-auto flex max-w-xl flex-col items-start text-left lg:mx-0'>
+          <div className='border-border/70 bg-card text-primary shadow-soft mb-6 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-mono text-xs font-semibold tracking-wide'>
             <Sparkle data-icon='inline-start' />
-            <span>optimiz</span>
+            <span>{t('optimiz')}</span>
           </div>
 
           <h1 className='font-serif text-5xl leading-[0.98] font-semibold text-balance md:text-6xl'>
@@ -55,7 +59,10 @@ export function Hero(props: HeroProps) {
             )}
           </p>
 
-          <div className='mt-9 flex flex-wrap items-center gap-3'>
+          <AnimateInView
+            className='mt-9 flex flex-wrap items-center gap-3'
+            delay={160}
+          >
             <Button
               size='lg'
               className='h-11 rounded-lg px-5'
@@ -85,16 +92,20 @@ export function Hero(props: HeroProps) {
               {t('Get Claude Code')}
               <ArrowDown data-icon='inline-end' />
             </Button>
-          </div>
-        </div>
+          </AnimateInView>
+        </AnimateInView>
 
-        <div className='relative mx-auto w-full max-w-md'>
+        <AnimateInView
+          animation='fade-left'
+          delay={120}
+          className='relative mx-auto w-full max-w-md'
+        >
           <div
             aria-hidden
-            className='bg-primary/10 absolute -inset-8 -z-10 rounded-full blur-3xl'
+            className='terminal-demo-pulse bg-primary/10 absolute -inset-8 -z-10 rounded-full blur-3xl'
           />
           <HeroTerminalDemo />
-        </div>
+        </AnimateInView>
       </div>
     </section>
   )

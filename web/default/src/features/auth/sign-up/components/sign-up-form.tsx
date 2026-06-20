@@ -16,15 +16,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useEffect, useMemo, useState } from 'react'
-import type { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { KeyRound, Loader2, Mail, ShieldCheck, UserRound } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
-import { useStatus } from '@/hooks/use-status'
+import type { z } from 'zod'
+
+import { Dialog } from '@/components/dialog'
+import { PasswordInput } from '@/components/password-input'
+import { Turnstile } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -36,9 +38,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Dialog } from '@/components/dialog'
-import { PasswordInput } from '@/components/password-input'
-import { Turnstile } from '@/components/turnstile'
 import { register, wechatLoginByCode } from '@/features/auth/api'
 import { LegalConsent } from '@/features/auth/components/legal-consent'
 import { OAuthProviders } from '@/features/auth/components/oauth-providers'
@@ -50,6 +49,8 @@ import {
   getAffiliateCode,
   saveAffiliateCode,
 } from '@/features/auth/lib/storage'
+import { useStatus } from '@/hooks/use-status'
+import { cn } from '@/lib/utils'
 
 export function SignUpForm({
   className,
@@ -279,9 +280,7 @@ export function SignUpForm({
           name='confirmPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='sr-only'>
-                {t('Confirm password')}
-              </FormLabel>
+              <FormLabel className='sr-only'>{t('Confirm password')}</FormLabel>
               <div className='relative'>
                 <KeyRound className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2' />
                 <FormControl>

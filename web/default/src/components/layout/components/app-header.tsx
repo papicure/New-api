@@ -18,15 +18,17 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/stores/auth-store'
-import { formatQuota } from '@/lib/format'
-import { useNotifications } from '@/hooks/use-notifications'
-import { useTopNavLinks } from '@/hooks/use-top-nav-links'
+
 import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
+import { useNotifications } from '@/hooks/use-notifications'
+import { useTopNavLinks } from '@/hooks/use-top-nav-links'
+import { formatQuota } from '@/lib/format'
+import { useAuthStore } from '@/stores/auth-store'
+
 import { defaultTopNavLinks } from '../config/top-nav.config'
 import { type TopNavLink } from '../types'
 import { Header } from './header'
