@@ -72,6 +72,8 @@ func GetStatus(c *gin.Context) {
 		"turnstile_site_key":          common.TurnstileSiteKey,
 		"recaptcha_check":             common.RecaptchaCheckEnabled,
 		"recaptcha_site_key":          common.RecaptchaSiteKey,
+		"geetest_check":               common.GeetestCheckEnabled,
+		"geetest_id":                  common.GeetestId,
 		"docs_link":                   operation_setting.GetGeneralSetting().DocsLink,
 		"quota_per_unit":              common.QuotaPerUnit,
 		// 兼容旧前端：保留 display_in_currency，同时提供新的 quota_display_type
@@ -169,6 +171,36 @@ func GetStatus(c *gin.Context) {
 		"data":    data,
 	})
 	return
+}
+
+// GeetestRegister returns an initialization payload for the Geetest v3 widget.
+// The client calls this before rendering the captcha to obtain a per-session
+// challenge. On failure we return success=true with success:0 so the widget can
+// surface a "captcha unavailable" state; submission stays blocked because no
+// valid challenge/seccode can be produced.
+func GeetestRegister(c *gin.Context) {
+	if !common.GeetestCheckEnabled {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "极验校验未启用",
+		})
+		return
+	}
+	challenge, ok := common.GeetestRegister(c.ClientIP())
+	successFlag := 0
+	if ok {
+		successFlag = 1
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data": gin.H{
+			"success":     successFlag,
+			"gt":          common.GeetestId,
+			"challenge":   challenge,
+			"new_captcha": 1,
+		},
+	})
 }
 
 func GetNotice(c *gin.Context) {

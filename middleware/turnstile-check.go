@@ -44,6 +44,8 @@ func TurnstileCheck() gin.HandlerFunc {
 		case common.RecaptchaCheckEnabled:
 			verifyURL = "https://www.google.com/recaptcha/api/siteverify"
 			secret = common.RecaptchaSecretKey
+		case common.GeetestCheckEnabled:
+			// Geetest uses a different protocol; handled separately below.
 		default:
 			c.Next()
 			return
@@ -64,15 +66,22 @@ func TurnstileCheck() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		success, err := verifyCaptchaToken(verifyURL, secret, response, c.ClientIP())
-		if err != nil {
-			common.SysLog(err.Error())
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-			c.Abort()
-			return
+
+		var success bool
+		if common.GeetestCheckEnabled {
+			success = verifyGeetest(response, c.ClientIP())
+		} else {
+			var err error
+			success, err = verifyCaptchaToken(verifyURL, secret, response, c.ClientIP())
+			if err != nil {
+				common.SysLog(err.Error())
+				c.JSON(http.StatusOK, gin.H{
+					"success": false,
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
 		}
 		if !success {
 			c.JSON(http.StatusOK, gin.H{
@@ -92,4 +101,22 @@ func TurnstileCheck() gin.HandlerFunc {
 		}
 		c.Next()
 	}
+}
+
+// geetestResult is the JSON payload the client packs into the shared turnstile
+// query parameter for Geetest: the three fields returned by getValidate().
+type geetestResult struct {
+	Challenge string `json:"geetest_challenge"`
+	Validate  string `json:"geetest_validate"`
+	Seccode   string `json:"geetest_seccode"`
+}
+
+// verifyGeetest unpacks the three Geetest fields from the shared token channel
+// and performs server-side validation.
+func verifyGeetest(token, remoteIP string) bool {
+	var result geetestResult
+	if err := common.UnmarshalJsonStr(token, &result); err != nil {
+		return false
+	}
+	return common.GeetestVerify(result.Challenge, result.Validate, result.Seccode, remoteIP)
 }

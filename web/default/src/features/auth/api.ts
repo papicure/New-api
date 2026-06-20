@@ -123,6 +123,21 @@ export async function sendEmailVerification(
   return res.data
 }
 
+// Geetest v3 init payload (challenge registration)
+export interface GeetestRegisterData {
+  success: number
+  gt: string
+  challenge: string
+  new_captcha: number
+}
+
+// Fetch a per-session Geetest challenge before rendering the widget
+export async function getGeetestRegister(): Promise<GeetestRegisterData | null> {
+  const res = await api.get('/api/geetest/register')
+  if (res.data?.success) return res.data.data as GeetestRegisterData
+  return null
+}
+
 // Bind email to OAuth account
 export async function bindEmail(
   email: string,

@@ -16,7 +16,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import i18next from 'i18next'
 import { useEffect, useRef } from 'react'
+
+import { getGeetestRegister } from '@/features/auth/api'
+
+type GeetestValidateResult = {
+  geetest_challenge: string
+  geetest_validate: string
+  geetest_seccode: string
+}
+
+type GeetestCaptchaObj = {
+  appendTo: (selector: string | HTMLElement) => void
+  getValidate: () => GeetestValidateResult | false
+  reset: () => void
+  onReady: (cb: () => void) => GeetestCaptchaObj
+  onSuccess: (cb: () => void) => GeetestCaptchaObj
+  onError: (cb: (err: unknown) => void) => GeetestCaptchaObj
+}
 
 declare global {
   interface Window {
@@ -34,23 +52,25 @@ declare global {
       ) => number | undefined
       reset: (widgetId?: number) => void
     }
+    initGeetest?: (
+      options: Record<string, unknown>,
+      callback: (captchaObj: GeetestCaptchaObj) => void
+    ) => void
   }
 }
 
-export type CaptchaProvider = 'turnstile' | 'recaptcha'
+export type CaptchaProvider = 'turnstile' | 'recaptcha' | 'geetest'
 
 interface CaptchaProps {
   provider: CaptchaProvider
+  // Turnstile/reCAPTCHA site key, unused by Geetest (which fetches gt at runtime).
   siteKey: string
   onVerify: (token: string) => void
   onExpire?: () => void
   className?: string
 }
 
-const PROVIDER_SCRIPT: Record<
-  CaptchaProvider,
-  { id: string; src: string }
-> = {
+const PROVIDER_SCRIPT: Record<CaptchaProvider, { id: string; src: string }> = {
   turnstile: {
     id: 'cf-turnstile',
     src: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',
@@ -59,16 +79,56 @@ const PROVIDER_SCRIPT: Record<
     id: 'g-recaptcha',
     src: 'https://www.google.com/recaptcha/api.js?render=explicit',
   },
+  geetest: {
+    id: 'geetest-gt',
+    src: 'https://static.geetest.com/static/tools/gt.js',
+  },
+}
+
+// Map the i18next interface language to Geetest's v3 language codes.
+const GEETEST_LANG: Record<string, string> = {
+  zh: 'zho',
+  en: 'eng',
+  fr: 'fra',
+  ru: 'rus',
+  ja: 'jpn',
+  vi: 'vie',
+}
+
+function geetestLang(): string {
+  const lang = (i18next.language || 'en').slice(0, 2)
+  return GEETEST_LANG[lang] ?? 'eng'
+}
+
+function loadScript(id: string, src: string, onload: () => void) {
+  const existing = document.getElementById(id) as HTMLScriptElement | null
+  if (existing) {
+    existing.addEventListener('load', onload, { once: true })
+    onload()
+    return
+  }
+  const s = document.createElement('script')
+  s.id = id
+  s.src = src
+  s.async = true
+  s.defer = true
+  s.onload = onload
+  document.head.appendChild(s)
 }
 
 /**
  * Renders a bot-protection captcha widget for the configured provider.
  *
+ * Cloudflare Turnstile and Google reCAPTCHA render a passive widget that emits
+ * a token via the onVerify callback. Geetest v3 is different: it requires a
+ * server-side challenge registration first, then renders a slider button (bind
+ * mode) that, once solved, packs its three result fields into a single JSON
+ * string passed through the same onVerify channel — so consumers stay unchanged.
+ *
  * Callbacks are kept in refs so the render effect depends only on
- * [provider, siteKey]. Inline callbacks (e.g. onExpire={() => ...}) change on
- * every render; without the ref indirection the effect would re-run and render
- * the widget twice into the same element — which both Cloudflare Turnstile and
- * Google reCAPTCHA reject, leaving the widget blank inside dialogs.
+ * [provider, siteKey]. Inline callbacks change on every render; without the ref
+ * indirection the effect would re-run and render the widget twice into the same
+ * element, which all three providers reject (leaving the widget blank).
  */
 export function Captcha({
   provider,
@@ -86,7 +146,65 @@ export function Captcha({
   useEffect(() => {
     let turnstileId: string | undefined
     let recaptchaId: number | undefined
+    let geetestObj: GeetestCaptchaObj | undefined
     let cancelled = false
+
+    if (provider === 'geetest') {
+      const initGeetest = async () => {
+        const data = await getGeetestRegister()
+        if (cancelled || !ref.current) return
+        if (!data || data.success !== 1) {
+          // Registration failed / Geetest unreachable: block (no offline mode).
+          onExpireRef.current?.()
+          return
+        }
+        loadScript(PROVIDER_SCRIPT.geetest.id, PROVIDER_SCRIPT.geetest.src, () => {
+          if (cancelled || !ref.current || !window.initGeetest) return
+          window.initGeetest(
+            {
+              gt: data.gt,
+              challenge: data.challenge,
+              offline: false,
+              new_captcha: data.new_captcha === 1,
+              product: 'bind',
+              lang: geetestLang(),
+              https: true,
+              width: '100%',
+            },
+            (captchaObj) => {
+              if (cancelled || !ref.current) return
+              geetestObj = captchaObj
+              captchaObj
+                .onReady(() => {
+                  if (cancelled || !ref.current) return
+                  captchaObj.appendTo(ref.current)
+                })
+                .onSuccess(() => {
+                  const result = captchaObj.getValidate()
+                  if (!result) {
+                    onExpireRef.current?.()
+                    return
+                  }
+                  onVerifyRef.current(JSON.stringify(result))
+                })
+                .onError(() => onExpireRef.current?.())
+            }
+          )
+        })
+      }
+      void initGeetest()
+
+      return () => {
+        cancelled = true
+        if (geetestObj?.reset) {
+          try {
+            geetestObj.reset()
+          } catch {
+            /* empty */
+          }
+        }
+      }
+    }
 
     const render = () => {
       if (cancelled || !ref.current) return
@@ -124,19 +242,7 @@ export function Captcha({
       render()
     } else {
       const { id, src } = PROVIDER_SCRIPT[provider]
-      const existing = document.getElementById(id) as HTMLScriptElement | null
-      if (existing) {
-        existing.addEventListener('load', render, { once: true })
-        render()
-      } else {
-        const s = document.createElement('script')
-        s.id = id
-        s.src = src
-        s.async = true
-        s.defer = true
-        s.onload = () => render()
-        document.head.appendChild(s)
-      }
+      loadScript(id, src, render)
     }
 
     return () => {

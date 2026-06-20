@@ -54,6 +54,9 @@ const botProtectionSchema = z.object({
   RecaptchaCheckEnabled: z.boolean(),
   RecaptchaSiteKey: z.string(),
   RecaptchaSecretKey: z.string(),
+  GeetestCheckEnabled: z.boolean(),
+  GeetestId: z.string(),
+  GeetestKey: z.string(),
 })
 
 type BotProtectionFormValues = z.infer<typeof botProtectionSchema>
@@ -74,6 +77,9 @@ const buildFormDefaults = (
   RecaptchaCheckEnabled: defaults.RecaptchaCheckEnabled,
   RecaptchaSiteKey: defaults.RecaptchaSiteKey ?? '',
   RecaptchaSecretKey: defaults.RecaptchaSecretKey ?? '',
+  GeetestCheckEnabled: defaults.GeetestCheckEnabled,
+  GeetestId: defaults.GeetestId ?? '',
+  GeetestKey: defaults.GeetestKey ?? '',
 })
 
 export function BotProtectionSection({
@@ -107,10 +113,13 @@ export function BotProtectionSection({
 
   const onSubmit = async (values: BotProtectionFormValues) => {
     // Only one captcha provider can be active on the backend at a time.
-    if (values.TurnstileCheckEnabled && values.RecaptchaCheckEnabled) {
-      toast.error(
-        t('Only one captcha provider can be enabled at a time')
-      )
+    const enabledCount = [
+      values.TurnstileCheckEnabled,
+      values.RecaptchaCheckEnabled,
+      values.GeetestCheckEnabled,
+    ].filter(Boolean).length
+    if (enabledCount > 1) {
+      toast.error(t('Only one captcha provider can be enabled at a time'))
       return
     }
 
@@ -160,13 +169,14 @@ export function BotProtectionSection({
             <FormDirtyIndicator isDirty={form.formState.isDirty} />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className='grid w-full grid-cols-2'>
+              <TabsList className='grid w-full grid-cols-3'>
                 <TabsTrigger value='turnstile'>
                   {t('Cloudflare Turnstile')}
                 </TabsTrigger>
                 <TabsTrigger value='recaptcha'>
                   {t('Google reCAPTCHA')}
                 </TabsTrigger>
+                <TabsTrigger value='geetest'>{t('GeeTest')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value='turnstile' className={tabContentClassName}>
@@ -190,6 +200,9 @@ export function BotProtectionSection({
                             field.onChange(checked)
                             if (checked) {
                               form.setValue('RecaptchaCheckEnabled', false, {
+                                shouldDirty: true,
+                              })
+                              form.setValue('GeetestCheckEnabled', false, {
                                 shouldDirty: true,
                               })
                             }
@@ -269,6 +282,9 @@ export function BotProtectionSection({
                               form.setValue('TurnstileCheckEnabled', false, {
                                 shouldDirty: true,
                               })
+                              form.setValue('GeetestCheckEnabled', false, {
+                                shouldDirty: true,
+                              })
                             }
                           }}
                         />
@@ -309,6 +325,86 @@ export function BotProtectionSection({
                         <Input
                           type='password'
                           placeholder={t('Your reCAPTCHA secret key')}
+                          autoComplete='new-password'
+                          value={field.value ?? ''}
+                          onChange={(event) => field.onChange(event.target.value)}
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+
+              <TabsContent value='geetest' className={tabContentClassName}>
+                <FormField
+                  control={form.control}
+                  name='GeetestCheckEnabled'
+                  render={({ field }) => (
+                    <SettingsSwitchItem>
+                      <SettingsSwitchContent>
+                        <FormLabel>{t('Enable GeeTest')}</FormLabel>
+                        <FormDescription>
+                          {t(
+                            'Protect login and registration with GeeTest behavior verification'
+                          )}
+                        </FormDescription>
+                      </SettingsSwitchContent>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked)
+                            if (checked) {
+                              form.setValue('TurnstileCheckEnabled', false, {
+                                shouldDirty: true,
+                              })
+                              form.setValue('RecaptchaCheckEnabled', false, {
+                                shouldDirty: true,
+                              })
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    </SettingsSwitchItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='GeetestId'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('GeeTest ID')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('Your GeeTest ID')}
+                          autoComplete='off'
+                          value={field.value ?? ''}
+                          onChange={(event) => field.onChange(event.target.value)}
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='GeetestKey'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('GeeTest Key')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='password'
+                          placeholder={t('Your GeeTest key')}
                           autoComplete='new-password'
                           value={field.value ?? ''}
                           onChange={(event) => field.onChange(event.target.value)}

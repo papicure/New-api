@@ -216,6 +216,15 @@ func UpdateOption(c *gin.Context) {
 
 			return
 		}
+	case "GeetestCheckEnabled":
+		if option.Value == "true" && (common.GeetestId == "" || common.GeetestKey == "") {
+			c.JSON(http.StatusOK, gin.H{
+				"success": false,
+				"message": "无法启用极验校验，请先填入极验 ID 与 KEY！",
+			})
+
+			return
+		}
 	case "TelegramOAuthEnabled":
 		if option.Value == "true" && common.TelegramBotToken == "" {
 			c.JSON(http.StatusOK, gin.H{

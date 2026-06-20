@@ -26,9 +26,9 @@ import { useStatus } from '@/hooks/use-status'
 /**
  * Hook for managing bot-protection captcha verification.
  *
- * Supports multiple providers (Cloudflare Turnstile, Google reCAPTCHA). Only
- * one can be active at a time on the backend; this resolves the active provider
- * and its site key from the system status.
+ * Supports multiple providers (Cloudflare Turnstile, Google reCAPTCHA, Geetest).
+ * Only one can be active at a time on the backend; this resolves the active
+ * provider and its site key from the system status.
  */
 export function useTurnstile() {
   const { status } = useStatus()
@@ -40,6 +40,7 @@ export function useTurnstile() {
   const recaptchaEnabled = !!(
     status?.recaptcha_check && status?.recaptcha_site_key
   )
+  const geetestEnabled = !!(status?.geetest_check && status?.geetest_id)
 
   let captchaProvider: CaptchaProvider | null = null
   let captchaSiteKey = ''
@@ -49,6 +50,10 @@ export function useTurnstile() {
   } else if (recaptchaEnabled) {
     captchaProvider = 'recaptcha'
     captchaSiteKey = status?.recaptcha_site_key || ''
+  } else if (geetestEnabled) {
+    // Geetest fetches its gt/challenge at runtime; no static site key.
+    captchaProvider = 'geetest'
+    captchaSiteKey = ''
   }
 
   const isCaptchaEnabled = captchaProvider !== null

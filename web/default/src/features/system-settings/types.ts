@@ -109,6 +109,9 @@ export type AuthSettings = {
   RecaptchaCheckEnabled: boolean
   RecaptchaSiteKey: string
   RecaptchaSecretKey: string
+  GeetestCheckEnabled: boolean
+  GeetestId: string
+  GeetestKey: string
   'passkey.enabled': boolean
   'passkey.rp_display_name': string
   'passkey.rp_id': string

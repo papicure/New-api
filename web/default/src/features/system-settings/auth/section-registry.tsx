@@ -111,6 +111,9 @@ const AUTH_SECTIONS = [
           RecaptchaCheckEnabled: settings.RecaptchaCheckEnabled,
           RecaptchaSiteKey: settings.RecaptchaSiteKey,
           RecaptchaSecretKey: settings.RecaptchaSecretKey,
+          GeetestCheckEnabled: settings.GeetestCheckEnabled,
+          GeetestId: settings.GeetestId,
+          GeetestKey: settings.GeetestKey,
         }}
       />
     ),

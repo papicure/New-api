@@ -45,6 +45,7 @@ func InitOptionMap() {
 	common.OptionMap["WeChatAuthEnabled"] = strconv.FormatBool(common.WeChatAuthEnabled)
 	common.OptionMap["TurnstileCheckEnabled"] = strconv.FormatBool(common.TurnstileCheckEnabled)
 	common.OptionMap["RecaptchaCheckEnabled"] = strconv.FormatBool(common.RecaptchaCheckEnabled)
+	common.OptionMap["GeetestCheckEnabled"] = strconv.FormatBool(common.GeetestCheckEnabled)
 	common.OptionMap["RegisterEnabled"] = strconv.FormatBool(common.RegisterEnabled)
 	common.OptionMap["AutomaticDisableChannelEnabled"] = strconv.FormatBool(common.AutomaticDisableChannelEnabled)
 	common.OptionMap["AutomaticEnableChannelEnabled"] = strconv.FormatBool(common.AutomaticEnableChannelEnabled)
@@ -131,6 +132,8 @@ func InitOptionMap() {
 	common.OptionMap["TurnstileSecretKey"] = ""
 	common.OptionMap["RecaptchaSiteKey"] = ""
 	common.OptionMap["RecaptchaSecretKey"] = ""
+	common.OptionMap["GeetestId"] = ""
+	common.OptionMap["GeetestKey"] = ""
 	common.OptionMap["QuotaForNewUser"] = strconv.Itoa(common.QuotaForNewUser)
 	common.OptionMap["QuotaForInviter"] = strconv.Itoa(common.QuotaForInviter)
 	common.OptionMap["QuotaForInvitee"] = strconv.Itoa(common.QuotaForInvitee)
@@ -299,6 +302,8 @@ func updateOptionMap(key string, value string) (err error) {
 			common.TurnstileCheckEnabled = boolValue
 		case "RecaptchaCheckEnabled":
 			common.RecaptchaCheckEnabled = boolValue
+		case "GeetestCheckEnabled":
+			common.GeetestCheckEnabled = boolValue
 		case "RegisterEnabled":
 			common.RegisterEnabled = boolValue
 		case "EmailDomainRestrictionEnabled":
@@ -503,6 +508,10 @@ func updateOptionMap(key string, value string) (err error) {
 		common.RecaptchaSiteKey = value
 	case "RecaptchaSecretKey":
 		common.RecaptchaSecretKey = value
+	case "GeetestId":
+		common.GeetestId = value
+	case "GeetestKey":
+		common.GeetestKey = value
 	case "QuotaForNewUser":
 		common.QuotaForNewUser, _ = strconv.Atoi(value)
 	case "QuotaForInviter":
