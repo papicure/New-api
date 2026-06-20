@@ -46,6 +46,8 @@ interface HeroTerminalDemoProps {
 }
 
 const TYPE_SPEED_MS = 34
+const LOOP_HOLD_MS = 2600
+const LOOP_CLEAR_MS = 700
 
 export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
   const { t } = useTranslation()
@@ -111,22 +113,37 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
       return
     }
 
-    let intervalId: number | undefined
+    let typeIntervalId: number | undefined
+    let loopTimeoutId: number | undefined
     let hasStarted = false
-    const startTyping = () => {
-      if (hasStarted) return
-      hasStarted = true
-      window.clearInterval(intervalId)
+
+    const clearTimers = () => {
+      window.clearInterval(typeIntervalId)
+      window.clearTimeout(loopTimeoutId)
+    }
+
+    const runCycle = () => {
       setVisibleChars(0)
-      intervalId = window.setInterval(() => {
+      typeIntervalId = window.setInterval(() => {
         setVisibleChars((current) => {
           if (current >= totalChars) {
-            window.clearInterval(intervalId)
+            window.clearInterval(typeIntervalId)
+            // Hold the completed frame, then clear and retype — loops forever.
+            loopTimeoutId = window.setTimeout(() => {
+              setVisibleChars(0)
+              loopTimeoutId = window.setTimeout(runCycle, LOOP_CLEAR_MS)
+            }, LOOP_HOLD_MS)
             return totalChars
           }
           return current + 1
         })
       }, TYPE_SPEED_MS)
+    }
+
+    const startTyping = () => {
+      if (hasStarted) return
+      hasStarted = true
+      runCycle()
     }
 
     const rect = element.getBoundingClientRect()
@@ -135,7 +152,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
 
     if (isAlreadyVisible) {
       window.requestAnimationFrame(startTyping)
-      return () => window.clearInterval(intervalId)
+      return clearTimers
     }
 
     const observer = new IntersectionObserver(
@@ -151,7 +168,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
 
     return () => {
       observer.disconnect()
-      window.clearInterval(intervalId)
+      clearTimers()
     }
   }, [totalChars])
 
