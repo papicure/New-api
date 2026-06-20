@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Dialog } from '@/components/dialog'
-import { Turnstile } from '@/components/turnstile'
+import { Captcha } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -40,6 +40,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from '@/components/ui/tooltip'
+import { useTurnstile } from '@/features/auth/hooks/use-turnstile'
 import { formatQuotaWithCurrency } from '@/lib/currency'
 import dayjs from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
@@ -49,16 +50,13 @@ import type { CheckinRecord } from '../types'
 
 interface CheckinCalendarCardProps {
   checkinEnabled: boolean
-  turnstileEnabled: boolean
-  turnstileSiteKey: string
 }
 
 export function CheckinCalendarCard({
   checkinEnabled,
-  turnstileEnabled,
-  turnstileSiteKey,
 }: CheckinCalendarCardProps) {
   const { t } = useTranslation()
+  const { captchaProvider, isCaptchaEnabled, captchaSiteKey } = useTurnstile()
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear(), now.getMonth(), 1)
@@ -130,11 +128,13 @@ export function CheckinCalendarCard({
 
   const shouldTriggerTurnstile = useCallback(
     (message?: string) => {
-      if (!turnstileEnabled) return false
+      if (!isCaptchaEnabled) return false
       if (typeof message !== 'string') return true
-      return message.includes('Turnstile')
+      // Backend reports captcha-required errors with the Chinese phrase
+      // "人机验证"; keep "Turnstile" for backward compatibility.
+      return message.includes('人机验证') || message.includes('Turnstile')
     },
-    [turnstileEnabled]
+    [isCaptchaEnabled]
   )
 
   const doCheckin = useCallback(
@@ -150,7 +150,7 @@ export function CheckinCalendarCard({
           setTurnstileModalVisible(false)
         } else {
           if (!token && shouldTriggerTurnstile(res.message)) {
-            if (!turnstileSiteKey) {
+            if (!captchaSiteKey) {
               toast.error(t('Turnstile is enabled but site key is empty.'))
               return
             }
@@ -168,7 +168,7 @@ export function CheckinCalendarCard({
         setCheckinLoading(false)
       }
     },
-    [refetch, shouldTriggerTurnstile, t, turnstileSiteKey]
+    [refetch, shouldTriggerTurnstile, t, captchaSiteKey]
   )
 
   const handlePrevMonth = () => {
@@ -260,16 +260,19 @@ export function CheckinCalendarCard({
           {t('Please complete the security check to continue.')}
         </div>
         <div className='flex justify-center py-4'>
-          <Turnstile
-            key={turnstileWidgetKey}
-            siteKey={turnstileSiteKey}
-            onVerify={(token) => {
-              doCheckin(token)
-            }}
-            onExpire={() => {
-              setTurnstileWidgetKey((v) => v + 1)
-            }}
-          />
+          {captchaProvider && (
+            <Captcha
+              key={turnstileWidgetKey}
+              provider={captchaProvider}
+              siteKey={captchaSiteKey}
+              onVerify={(token) => {
+                doCheckin(token)
+              }}
+              onExpire={() => {
+                setTurnstileWidgetKey((v) => v + 1)
+              }}
+            />
+          )}
         </div>
       </Dialog>
 

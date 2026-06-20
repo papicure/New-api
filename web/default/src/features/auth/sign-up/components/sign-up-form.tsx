@@ -26,7 +26,7 @@ import type { z } from 'zod'
 
 import { Dialog } from '@/components/dialog'
 import { PasswordInput } from '@/components/password-input'
-import { Turnstile } from '@/components/turnstile'
+import { Captcha } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -67,11 +67,12 @@ export function SignUpForm({
 
   const { status } = useStatus()
   const {
-    isTurnstileEnabled,
-    turnstileSiteKey,
-    turnstileToken,
-    setTurnstileToken,
-    validateTurnstile,
+    captchaProvider,
+    isCaptchaEnabled,
+    captchaSiteKey,
+    captchaToken,
+    setCaptchaToken,
+    validateCaptcha,
   } = useTurnstile()
   const { redirectToLogin, handleLoginSuccess } = useAuthRedirect()
   const {
@@ -80,8 +81,8 @@ export function SignUpForm({
     isActive,
     sendCode,
   } = useEmailVerification({
-    turnstileToken,
-    validateTurnstile,
+    captchaToken,
+    validateCaptcha,
   })
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
@@ -104,7 +105,7 @@ export function SignUpForm({
     status?.data?.oauth_register_enabled ??
     true
   const hasWeChatLogin = Boolean(status?.wechat_login)
-  const turnstileReady = !isTurnstileEnabled || Boolean(turnstileToken)
+  const turnstileReady = !isCaptchaEnabled || Boolean(captchaToken)
 
   const wechatQrCodeUrl = useMemo(() => {
     return (
@@ -153,7 +154,7 @@ export function SignUpForm({
       }
     }
 
-    if (!validateTurnstile()) return
+    if (!validateCaptcha()) return
 
     setIsLoading(true)
     try {
@@ -163,7 +164,7 @@ export function SignUpForm({
         email: data.email || undefined,
         verification_code: verificationCode || undefined,
         aff_code: getAffiliateCode(),
-        turnstile: turnstileToken,
+        turnstile: captchaToken,
       })
 
       if (res?.success) {
@@ -359,12 +360,13 @@ export function SignUpForm({
           </>
         )}
 
-        {/* Turnstile */}
-        {isTurnstileEnabled && (
+        {/* Captcha */}
+        {isCaptchaEnabled && captchaProvider && (
           <div className='mt-2'>
-            <Turnstile
-              siteKey={turnstileSiteKey}
-              onVerify={setTurnstileToken}
+            <Captcha
+              provider={captchaProvider}
+              siteKey={captchaSiteKey}
+              onVerify={setCaptchaToken}
             />
           </div>
         )}

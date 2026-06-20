@@ -27,7 +27,7 @@ import type { z } from 'zod'
 
 import { Dialog } from '@/components/dialog'
 import { PasswordInput } from '@/components/password-input'
-import { Turnstile } from '@/components/turnstile'
+import { Captcha } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -80,11 +80,12 @@ export function UserAuthForm({
       status?.data?.password_login_enabled ??
       true) !== false
   const {
-    isTurnstileEnabled,
-    turnstileSiteKey,
-    turnstileToken,
-    setTurnstileToken,
-    validateTurnstile,
+    captchaProvider,
+    isCaptchaEnabled,
+    captchaSiteKey,
+    captchaToken,
+    setCaptchaToken,
+    validateCaptcha,
   } = useTurnstile()
   const { handleLoginSuccess, redirectTo2FA } = useAuthRedirect()
 
@@ -149,14 +150,14 @@ export function UserAuthForm({
       return
     }
 
-    if (!validateTurnstile()) return
+    if (!validateCaptcha()) return
 
     setIsLoading(true)
     try {
       const res = await login({
         username: data.username,
         password: data.password,
-        turnstile: turnstileToken,
+        turnstile: captchaToken,
       })
 
       if (res.success) {
@@ -392,12 +393,13 @@ export function UserAuthForm({
               {t('Sign in')}
             </Button>
 
-            {/* Turnstile */}
-            {isTurnstileEnabled && (
+            {/* Captcha */}
+            {isCaptchaEnabled && captchaProvider && (
               <div className='mt-2'>
-                <Turnstile
-                  siteKey={turnstileSiteKey}
-                  onVerify={setTurnstileToken}
+                <Captcha
+                  provider={captchaProvider}
+                  siteKey={captchaSiteKey}
+                  onVerify={setCaptchaToken}
                 />
               </div>
             )}

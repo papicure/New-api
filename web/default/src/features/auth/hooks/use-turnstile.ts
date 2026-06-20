@@ -20,25 +20,44 @@ import i18next from 'i18next'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import type { CaptchaProvider } from '@/components/turnstile'
 import { useStatus } from '@/hooks/use-status'
 
 /**
- * Hook for managing Turnstile verification
+ * Hook for managing bot-protection captcha verification.
+ *
+ * Supports multiple providers (Cloudflare Turnstile, Google reCAPTCHA). Only
+ * one can be active at a time on the backend; this resolves the active provider
+ * and its site key from the system status.
  */
 export function useTurnstile() {
   const { status } = useStatus()
-  const [turnstileToken, setTurnstileToken] = useState('')
+  const [captchaToken, setCaptchaToken] = useState('')
 
-  const isTurnstileEnabled = !!(
+  const turnstileEnabled = !!(
     status?.turnstile_check && status?.turnstile_site_key
   )
-  const turnstileSiteKey = status?.turnstile_site_key || ''
+  const recaptchaEnabled = !!(
+    status?.recaptcha_check && status?.recaptcha_site_key
+  )
+
+  let captchaProvider: CaptchaProvider | null = null
+  let captchaSiteKey = ''
+  if (turnstileEnabled) {
+    captchaProvider = 'turnstile'
+    captchaSiteKey = status?.turnstile_site_key || ''
+  } else if (recaptchaEnabled) {
+    captchaProvider = 'recaptcha'
+    captchaSiteKey = status?.recaptcha_site_key || ''
+  }
+
+  const isCaptchaEnabled = captchaProvider !== null
 
   /**
-   * Validate if turnstile is ready when required
+   * Validate if captcha is ready when required
    */
-  const validateTurnstile = (): boolean => {
-    if (isTurnstileEnabled && !turnstileToken) {
+  const validateCaptcha = (): boolean => {
+    if (isCaptchaEnabled && !captchaToken) {
       toast.info(
         i18next.t('Please wait a moment, human check is initializing...')
       )
@@ -48,10 +67,11 @@ export function useTurnstile() {
   }
 
   return {
-    isTurnstileEnabled,
-    turnstileSiteKey,
-    turnstileToken,
-    setTurnstileToken,
-    validateTurnstile,
+    captchaProvider,
+    isCaptchaEnabled,
+    captchaSiteKey,
+    captchaToken,
+    setCaptchaToken,
+    validateCaptcha,
   }
 }

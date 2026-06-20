@@ -112,7 +112,9 @@ func sendEmailNotify(userEmail string, data dto.Notify) error {
 	for _, value := range data.Values {
 		content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
 	}
-	return common.SendEmail(data.Title, userEmail, content)
+	// 套用统一的品牌邮件外壳，使通知邮件与验证码/重置邮件风格一致
+	brandedContent := common.BuildBrandedEmail(data.Title, data.Title, content)
+	return common.SendEmail(data.Title, userEmail, brandedContent)
 }
 
 func sendBarkNotify(barkURL string, data dto.Notify) error {

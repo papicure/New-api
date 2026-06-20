@@ -207,6 +207,15 @@ func UpdateOption(c *gin.Context) {
 
 			return
 		}
+	case "RecaptchaCheckEnabled":
+		if option.Value == "true" && common.RecaptchaSiteKey == "" {
+			c.JSON(http.StatusOK, gin.H{
+				"success": false,
+				"message": "无法启用 reCAPTCHA 校验，请先填入 reCAPTCHA 校验相关配置信息！",
+			})
+
+			return
+		}
 	case "TelegramOAuthEnabled":
 		if option.Value == "true" && common.TelegramBotToken == "" {
 			c.JSON(http.StatusOK, gin.H{

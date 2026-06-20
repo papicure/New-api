@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Dialog } from '@/components/dialog'
-import { Turnstile } from '@/components/turnstile'
+import { Captcha } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -54,11 +54,12 @@ export function EmailBindDialog({
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const {
-    isTurnstileEnabled,
-    turnstileSiteKey,
-    turnstileToken,
-    setTurnstileToken,
-    validateTurnstile,
+    captchaProvider,
+    isCaptchaEnabled,
+    captchaSiteKey,
+    captchaToken,
+    setCaptchaToken,
+    validateCaptcha,
   } = useTurnstile()
   const {
     secondsLeft,
@@ -75,13 +76,13 @@ export function EmailBindDialog({
       return
     }
 
-    if (!validateTurnstile()) {
+    if (!validateCaptcha()) {
       return
     }
 
     try {
       setSendingCode(true)
-      const response = await sendEmailVerification(email, turnstileToken)
+      const response = await sendEmailVerification(email, captchaToken)
 
       if (response.success) {
         toast.success(t('Verification code sent! Please check your email.'))
@@ -185,11 +186,12 @@ export function EmailBindDialog({
           />
         </div>
 
-        {isTurnstileEnabled && (
-          <Turnstile
-            siteKey={turnstileSiteKey}
-            onVerify={setTurnstileToken}
-            onExpire={() => setTurnstileToken('')}
+        {isCaptchaEnabled && captchaProvider && (
+          <Captcha
+            provider={captchaProvider}
+            siteKey={captchaSiteKey}
+            onVerify={setCaptchaToken}
+            onExpire={() => setCaptchaToken('')}
           />
         )}
 

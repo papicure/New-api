@@ -27,71 +27,111 @@ declare global {
       ) => string | undefined
       remove: (widgetId: string) => void
     }
+    grecaptcha?: {
+      render: (
+        element: HTMLElement,
+        options: Record<string, unknown>
+      ) => number | undefined
+      reset: (widgetId?: number) => void
+    }
   }
 }
 
-interface TurnstileProps {
+export type CaptchaProvider = 'turnstile' | 'recaptcha'
+
+interface CaptchaProps {
+  provider: CaptchaProvider
   siteKey: string
   onVerify: (token: string) => void
   onExpire?: () => void
   className?: string
 }
 
-export function Turnstile({
+const PROVIDER_SCRIPT: Record<
+  CaptchaProvider,
+  { id: string; src: string }
+> = {
+  turnstile: {
+    id: 'cf-turnstile',
+    src: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',
+  },
+  recaptcha: {
+    id: 'g-recaptcha',
+    src: 'https://www.google.com/recaptcha/api.js?render=explicit',
+  },
+}
+
+/**
+ * Renders a bot-protection captcha widget for the configured provider.
+ *
+ * Callbacks are kept in refs so the render effect depends only on
+ * [provider, siteKey]. Inline callbacks (e.g. onExpire={() => ...}) change on
+ * every render; without the ref indirection the effect would re-run and render
+ * the widget twice into the same element — which both Cloudflare Turnstile and
+ * Google reCAPTCHA reject, leaving the widget blank inside dialogs.
+ */
+export function Captcha({
+  provider,
   siteKey,
   onVerify,
   onExpire,
   className,
-}: TurnstileProps) {
+}: CaptchaProps) {
   const ref = useRef<HTMLDivElement | null>(null)
-
-  // Keep latest callbacks in refs so the render effect can depend only on
-  // siteKey. Otherwise inline callbacks (e.g. onExpire={() => ...}) change on
-  // every render, re-running the effect and calling turnstile.render() again
-  // on the same element — which Cloudflare rejects, leaving the widget blank
-  // (this is why the widget failed to appear inside dialogs).
   const onVerifyRef = useRef(onVerify)
   const onExpireRef = useRef(onExpire)
   onVerifyRef.current = onVerify
   onExpireRef.current = onExpire
 
   useEffect(() => {
-    let widgetId: string | undefined
+    let turnstileId: string | undefined
+    let recaptchaId: number | undefined
     let cancelled = false
 
     const render = () => {
-      if (cancelled || !ref.current || !window.turnstile) return
-      // Avoid double-render into the same container.
-      if (widgetId !== undefined) return
-      try {
-        widgetId = window.turnstile.render(ref.current, {
-          sitekey: siteKey,
-          callback: (token: string) => onVerifyRef.current(token),
-          'error-callback': () => onExpireRef.current?.(),
-          'expired-callback': () => onExpireRef.current?.(),
-        })
-      } catch {
-        /* empty */
+      if (cancelled || !ref.current) return
+      if (provider === 'turnstile') {
+        if (!window.turnstile || turnstileId !== undefined) return
+        try {
+          turnstileId = window.turnstile.render(ref.current, {
+            sitekey: siteKey,
+            callback: (token: string) => onVerifyRef.current(token),
+            'error-callback': () => onExpireRef.current?.(),
+            'expired-callback': () => onExpireRef.current?.(),
+          })
+        } catch {
+          /* empty */
+        }
+      } else {
+        if (!window.grecaptcha?.render || recaptchaId !== undefined) return
+        try {
+          recaptchaId = window.grecaptcha.render(ref.current, {
+            sitekey: siteKey,
+            callback: (token: string) => onVerifyRef.current(token),
+            'error-callback': () => onExpireRef.current?.(),
+            'expired-callback': () => onExpireRef.current?.(),
+          })
+        } catch {
+          /* empty */
+        }
       }
     }
 
-    if (window.turnstile) {
+    const ready = () =>
+      provider === 'turnstile' ? !!window.turnstile : !!window.grecaptcha?.render
+
+    if (ready()) {
       render()
     } else {
-      const scriptId = 'cf-turnstile'
-      const existing = document.getElementById(
-        scriptId
-      ) as HTMLScriptElement | null
+      const { id, src } = PROVIDER_SCRIPT[provider]
+      const existing = document.getElementById(id) as HTMLScriptElement | null
       if (existing) {
-        // Script tag present but maybe not loaded yet; attach a load hook and
-        // also try immediately in case it is already available.
         existing.addEventListener('load', render, { once: true })
         render()
       } else {
         const s = document.createElement('script')
-        s.id = scriptId
-        s.src =
-          'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+        s.id = id
+        s.src = src
         s.async = true
         s.defer = true
         s.onload = () => render()
@@ -101,15 +141,22 @@ export function Turnstile({
 
     return () => {
       cancelled = true
-      if (widgetId !== undefined && window.turnstile?.remove) {
+      if (turnstileId !== undefined && window.turnstile?.remove) {
         try {
-          window.turnstile.remove(widgetId)
+          window.turnstile.remove(turnstileId)
+        } catch {
+          /* empty */
+        }
+      }
+      if (recaptchaId !== undefined && window.grecaptcha?.reset) {
+        try {
+          window.grecaptcha.reset(recaptchaId)
         } catch {
           /* empty */
         }
       }
     }
-  }, [siteKey])
+  }, [provider, siteKey])
 
   return <div ref={ref} className={className} />
 }

@@ -24,7 +24,11 @@ func BuildBrandedEmail(heading string, preheader string, innerHTML string) strin
 		`<span style="display:inline-block;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#D97757;letter-spacing:0.2px;">%s</span>`,
 		htmlEscapeText(brand),
 	)
-	if Logo != "" {
+	// Only use an <img> logo when Logo is an absolute http(s) URL. Mail clients
+	// (Gmail, Outlook, QQ Mail, etc.) block "data:" URIs and relative paths,
+	// which would render as a broken image. In every other case fall back to the
+	// brand wordmark so the header always looks intact.
+	if strings.HasPrefix(Logo, "http://") || strings.HasPrefix(Logo, "https://") {
 		logoBlock = fmt.Sprintf(
 			`<img src="%s" alt="%s" height="36" style="display:inline-block;height:36px;max-height:36px;border:0;outline:none;text-decoration:none;" />`,
 			htmlEscapeText(Logo), htmlEscapeText(brand),

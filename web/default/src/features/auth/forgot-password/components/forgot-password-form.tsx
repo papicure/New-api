@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { z } from 'zod'
 
-import { Turnstile } from '@/components/turnstile'
+import { Captcha } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -52,11 +52,12 @@ export function ForgotPasswordForm({
   const [isLoading, setIsLoading] = useState(false)
 
   const {
-    isTurnstileEnabled,
-    turnstileSiteKey,
-    turnstileToken,
-    setTurnstileToken,
-    validateTurnstile,
+    captchaProvider,
+    isCaptchaEnabled,
+    captchaSiteKey,
+    captchaToken,
+    setCaptchaToken,
+    validateCaptcha,
   } = useTurnstile()
   const {
     secondsLeft,
@@ -68,14 +69,14 @@ export function ForgotPasswordForm({
     resolver: zodResolver(forgotPasswordFormSchema),
     defaultValues: { email: '' },
   })
-  const turnstileReady = !isTurnstileEnabled || Boolean(turnstileToken)
+  const turnstileReady = !isCaptchaEnabled || Boolean(captchaToken)
 
   async function onSubmit(data: z.infer<typeof forgotPasswordFormSchema>) {
-    if (!validateTurnstile()) return
+    if (!validateCaptcha()) return
 
     setIsLoading(true)
     try {
-      const res = await sendPasswordResetEmail(data.email, turnstileToken)
+      const res = await sendPasswordResetEmail(data.email, captchaToken)
       if (res?.success) {
         form.reset()
         startCountdown()
@@ -122,11 +123,12 @@ export function ForgotPasswordForm({
           {isLoading ? <Loader2 className='animate-spin' /> : <ArrowRight />}
         </Button>
 
-        {isTurnstileEnabled && (
+        {isCaptchaEnabled && captchaProvider && (
           <div className='mt-2'>
-            <Turnstile
-              siteKey={turnstileSiteKey}
-              onVerify={setTurnstileToken}
+            <Captcha
+              provider={captchaProvider}
+              siteKey={captchaSiteKey}
+              onVerify={setCaptchaToken}
             />
           </div>
         )}
