@@ -45,17 +45,12 @@ function InfoItem(props: {
 }) {
   const Icon = props.icon
   return (
-    <div className='flex min-w-0 items-start gap-2'>
-      <Icon
-        className='text-muted-foreground mt-0.5 size-4 shrink-0'
-        aria-hidden='true'
-      />
-      <div className='min-w-0'>
-        <div className='text-muted-foreground text-xs font-medium'>
-          {props.label}
-        </div>
-        <div className='truncate text-sm font-medium'>{props.children}</div>
+    <div className='flex min-w-0 flex-col gap-1'>
+      <div className='text-muted-foreground flex h-4 items-center gap-1.5 text-xs font-medium'>
+        <Icon className='size-3.5 shrink-0' aria-hidden='true' />
+        <span className='truncate'>{props.label}</span>
       </div>
+      <div className='truncate text-sm font-medium'>{props.children}</div>
     </div>
   )
 }
