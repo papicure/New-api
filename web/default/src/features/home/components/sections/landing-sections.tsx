@@ -113,7 +113,7 @@ export function WhyChooseUs() {
     <section className='px-6 py-20 md:py-24'>
       <div className='mx-auto max-w-6xl'>
         <SectionHeader
-          eyebrow={t('why-newapi')}
+          eyebrow={t('Why us')}
           title={t('Why choose us')}
           description={t(
             'Simple, powerful, and reliable. We redefine the AI coding experience.'
@@ -205,7 +205,7 @@ export function AiTools() {
     <section className='px-6 py-20 md:py-24'>
       <div className='mx-auto max-w-5xl'>
         <SectionHeader
-          eyebrow={t('toolchain-lockup')}
+          eyebrow={t('Toolchain')}
           title={t('Top AI coding tools')}
           description={t(
             'One platform connects to the world most powerful AI coding assistants.'
@@ -223,9 +223,9 @@ export function AiTools() {
                 <div
                   aria-hidden
                   className={cn(
-                    'terminal-demo-pulse absolute inset-y-8 w-1/2 rounded-full blur-3xl',
+                    'terminal-demo-pulse pointer-events-none absolute inset-y-8 w-1/2 rounded-full blur-2xl',
                     tool.glow,
-                    tool.align === 'right' ? 'right-8' : 'left-8'
+                    tool.align === 'right' ? 'right-4' : 'left-4'
                   )}
                   style={{ animationDelay: `${index * 450}ms` }}
                 />
@@ -328,7 +328,7 @@ export function SharedPool() {
     <section className='px-6 py-20 md:py-24'>
       <div className='mx-auto max-w-5xl'>
         <SectionHeader
-          eyebrow={t('pool.scheduler')}
+          eyebrow={t('Smart routing')}
           title={
             <>
               {t('Flexible pooling,')}
@@ -414,7 +414,7 @@ export function FAQAndCTA(props: { isAuthenticated?: boolean }) {
     <section className='px-6 py-20 md:py-24'>
       <div className='mx-auto max-w-5xl'>
         <SectionHeader
-          eyebrow={t('faq.help')}
+          eyebrow={t('Help')}
           title={t('Frequently asked questions')}
           description={t('Still have questions? We are here to answer.')}
         />

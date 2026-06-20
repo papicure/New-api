@@ -554,9 +554,9 @@ const getOperationSummary = (
 
 const getModeTagTailwind = (mode: string): string => {
   if (mode.includes('header'))
-    return 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/20'
+    return 'border-info/25 bg-info/10 text-info'
   if (mode.includes('replace') || mode.includes('trim'))
-    return 'bg-violet-500/15 text-violet-700 dark:text-violet-300 border-violet-500/20'
+    return 'border-primary/25 bg-primary/10 text-primary'
   if (mode.includes('copy') || mode.includes('move'))
     return 'border-info/25 bg-info/10 text-info'
   if (mode.includes('error') || mode.includes('prune'))

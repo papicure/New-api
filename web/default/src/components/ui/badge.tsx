@@ -41,6 +41,8 @@ const badgeVariants = cva(
           'bg-neutral/10 text-neutral-foreground focus-visible:ring-neutral/20 dark:bg-neutral/20 dark:text-neutral dark:focus-visible:ring-neutral/40 [a]:hover:bg-neutral/20',
         outline:
           'border-border bg-background/50 font-mono text-[0.68rem] text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
+        technical:
+          'border-border/70 bg-muted/40 font-mono text-[0.68rem] text-muted-foreground tabular-nums [a]:hover:bg-muted [a]:hover:text-foreground',
         ghost:
           'hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50',
         link: 'text-primary underline-offset-4 hover:underline',

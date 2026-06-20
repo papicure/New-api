@@ -37,22 +37,19 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
   return (
     <LayoutProvider>
       <SearchProvider>
-        <SidebarProvider defaultOpen={defaultOpen} className='flex-col'>
+        <SidebarProvider defaultOpen={defaultOpen}>
           <SkipToMain />
-          <AppHeader />
-          <div className='flex min-h-0 w-full flex-1'>
-            <AppSidebar />
-            <SidebarInset
-              className={cn(
-                '@container/content',
-                'h-[calc(100svh-var(--app-header-height,0px))]',
-                'min-h-0 overflow-hidden',
-                'peer-data-[variant=inset]:h-[calc(100svh-var(--app-header-height,0px)-(var(--spacing)*4))]'
-              )}
-            >
-              {props.children ?? <AnimatedOutlet />}
-            </SidebarInset>
-          </div>
+          <AppSidebar />
+          <SidebarInset
+            className={cn(
+              '@container/content',
+              'h-svh min-h-0 overflow-hidden',
+              'peer-data-[variant=inset]:h-[calc(100svh-(var(--spacing)*4))]'
+            )}
+          >
+            <AppHeader />
+            {props.children ?? <AnimatedOutlet />}
+          </SidebarInset>
         </SidebarProvider>
       </SearchProvider>
     </LayoutProvider>

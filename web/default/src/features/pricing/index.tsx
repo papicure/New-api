@@ -161,15 +161,7 @@ export function Pricing() {
       <div className='relative'>
         <div
           aria-hidden
-          className='pointer-events-none absolute inset-x-0 top-0 h-[560px] opacity-80'
-          style={{
-            background:
-              'linear-gradient(180deg, color-mix(in oklch, var(--primary) 12%, transparent), transparent)',
-            maskImage:
-              'linear-gradient(to bottom, black 40%, transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(to bottom, black 40%, transparent 100%)',
-          }}
+          className='from-primary/10 pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-linear-to-b to-transparent opacity-80 [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)]'
         />
         <PageTransition className='relative mx-auto w-full max-w-[1800px] px-3 pt-16 pb-8 sm:px-6 sm:pt-20 sm:pb-10 xl:px-8'>
           <header className='mx-auto mb-5 max-w-3xl pt-5 text-center sm:mb-10 sm:pt-10'>

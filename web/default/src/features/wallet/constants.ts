@@ -44,18 +44,6 @@ export const PAYMENT_TYPES = {
 export const DEFAULT_PAYMENT_TYPE = PAYMENT_TYPES.ALIPAY
 
 /**
- * Payment icon colors (HEX format for react-icons)
- */
-export const PAYMENT_ICON_COLORS = {
-  [PAYMENT_TYPES.ALIPAY]: '#1677FF',
-  [PAYMENT_TYPES.WECHAT]: '#07C160',
-  [PAYMENT_TYPES.STRIPE]: '#635BFF',
-  [PAYMENT_TYPES.CREEM]: '#6366F1',
-  [PAYMENT_TYPES.WAFFO]: '#2563EB',
-  [PAYMENT_TYPES.WAFFO_PANCAKE]: '#F97316',
-} as const
-
-/**
  * Quota conversion rate: 500,000 units = $1
  */
 export const QUOTA_PER_DOLLAR = 500000

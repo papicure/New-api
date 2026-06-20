@@ -22,8 +22,9 @@ import { type ReactNode } from 'react'
 import { SiAlipay, SiWechat, SiStripe } from 'react-icons/si'
 
 import { ReactIconByName } from '@/components/react-icon-by-name'
+import { cn } from '@/lib/utils'
 
-import { PAYMENT_TYPES, PAYMENT_ICON_COLORS } from '../constants'
+import { PAYMENT_TYPES } from '../constants'
 
 // ============================================================================
 // UI Helper Functions
@@ -99,40 +100,15 @@ export function getPaymentIcon(
 
   switch (paymentType) {
     case PAYMENT_TYPES.ALIPAY:
-      return (
-        <SiAlipay
-          className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.ALIPAY] }}
-        />
-      )
+      return <SiAlipay className={cn(className, 'text-info')} />
     case PAYMENT_TYPES.WECHAT:
-      return (
-        <SiWechat
-          className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT] }}
-        />
-      )
+      return <SiWechat className={cn(className, 'text-success')} />
     case PAYMENT_TYPES.STRIPE:
-      return (
-        <SiStripe
-          className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.STRIPE] }}
-        />
-      )
+      return <SiStripe className={cn(className, 'text-primary')} />
     case PAYMENT_TYPES.CREEM:
-      return (
-        <Landmark
-          className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.CREEM] }}
-        />
-      )
+      return <Landmark className={cn(className, 'text-primary')} />
     case PAYMENT_TYPES.WAFFO:
-      return (
-        <CreditCard
-          className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WAFFO] }}
-        />
-      )
+      return <CreditCard className={cn(className, 'text-info')} />
     case PAYMENT_TYPES.WAFFO_PANCAKE:
       // The W glyph fills only ~40% of its viewBox vertically (wide and
       // short letterform); scale(2) brings its rendered height in line

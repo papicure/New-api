@@ -23,6 +23,7 @@ import {
 } from '@tanstack/react-table'
 
 import { TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 import { DataTableColumnHeader } from './column-header'
 import type { DataTableColumnClassName } from './types'
@@ -45,12 +46,18 @@ export function DataTableHeader<TData>({
   return (
     <TableHeader className={className}>
       {table.getHeaderGroups().map((headerGroup) => (
-        <TableRow key={headerGroup.id} className={rowClassName}>
+        <TableRow
+          key={headerGroup.id}
+          className={cn('border-border/60 hover:bg-transparent', rowClassName)}
+        >
           {headerGroup.headers.map((header) => (
             <TableHead
               key={header.id}
               colSpan={header.colSpan}
-              className={getColumnClassName?.(header.column.id, 'header')}
+              className={cn(
+                'text-muted-foreground h-10 text-xs font-medium uppercase',
+                getColumnClassName?.(header.column.id, 'header')
+              )}
               style={applyHeaderSize ? { width: header.getSize() } : undefined}
             >
               {renderHeaderContent(header)}

@@ -44,7 +44,7 @@ export function Hero(props: HeroProps) {
         <AnimateInView className='mx-auto flex max-w-xl flex-col items-start text-left lg:mx-0'>
           <div className='border-border/70 bg-card text-primary shadow-soft mb-6 inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-mono text-xs font-semibold tracking-wide'>
             <Sparkle data-icon='inline-start' />
-            <span>{t('optimiz')}</span>
+            <span>{t('Built for AI coding')}</span>
           </div>
 
           <h1 className='font-serif text-5xl leading-[0.98] font-semibold text-balance md:text-6xl'>
@@ -103,6 +103,10 @@ export function Hero(props: HeroProps) {
           <div
             aria-hidden
             className='terminal-demo-pulse bg-primary/10 absolute -inset-8 -z-10 rounded-full blur-3xl'
+          />
+          <div
+            aria-hidden
+            className='bg-dot-grid pointer-events-none absolute -inset-8 -z-10 opacity-50'
           />
           <HeroTerminalDemo />
         </AnimateInView>

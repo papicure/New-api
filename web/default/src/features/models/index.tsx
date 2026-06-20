@@ -87,6 +87,11 @@ function ModelsContent() {
     <>
       <SectionPageLayout fixedContent>
         <SectionPageLayout.Title>{t(meta.titleKey)}</SectionPageLayout.Title>
+        <SectionPageLayout.Description>
+          {activeSection === 'metadata'
+            ? t('Curate model metadata, vendor mapping, and display details.')
+            : t('Manage model deployments and runtime availability.')}
+        </SectionPageLayout.Description>
         <SectionPageLayout.Actions>
           {activeSection === 'metadata' ? (
             <ModelsPrimaryButtons />

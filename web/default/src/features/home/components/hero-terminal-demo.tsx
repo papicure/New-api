@@ -45,7 +45,7 @@ interface HeroTerminalDemoProps {
   variant?: 'home' | 'auth'
 }
 
-const TYPE_SPEED_MS = 22
+const TYPE_SPEED_MS = 34
 
 export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
   const { t } = useTranslation()
@@ -112,7 +112,10 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
     }
 
     let intervalId: number | undefined
+    let hasStarted = false
     const startTyping = () => {
+      if (hasStarted) return
+      hasStarted = true
       window.clearInterval(intervalId)
       setVisibleChars(0)
       intervalId = window.setInterval(() => {
@@ -126,6 +129,15 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
       }, TYPE_SPEED_MS)
     }
 
+    const rect = element.getBoundingClientRect()
+    const isAlreadyVisible =
+      rect.top < window.innerHeight * 0.9 && rect.bottom > window.innerHeight * 0.1
+
+    if (isAlreadyVisible) {
+      window.requestAnimationFrame(startTyping)
+      return () => window.clearInterval(intervalId)
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -133,7 +145,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           observer.unobserve(element)
         }
       },
-      { threshold: 0.35 }
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.18 }
     )
     observer.observe(element)
 

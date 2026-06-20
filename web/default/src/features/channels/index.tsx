@@ -31,6 +31,9 @@ export function Channels() {
     <ChannelsProvider>
       <SectionPageLayout fixedContent>
         <SectionPageLayout.Title>{t('Channels')}</SectionPageLayout.Title>
+        <SectionPageLayout.Description>
+          {t('Configure upstream providers, routing health, and failover.')}
+        </SectionPageLayout.Description>
         <SectionPageLayout.Actions>
           <ChannelsPrimaryButtons />
         </SectionPageLayout.Actions>

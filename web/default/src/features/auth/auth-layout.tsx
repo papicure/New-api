@@ -111,7 +111,7 @@ export function AuthLayout(props: AuthLayoutProps) {
         <div aria-hidden className='bg-dot-grid absolute inset-0' />
         <div
           aria-hidden
-          className='terminal-demo-pulse bg-primary/10 absolute inset-y-20 right-10 left-24 rounded-full blur-3xl'
+          className='bg-scanlines absolute inset-0 opacity-30'
         />
         <div className='relative w-full max-w-lg'>
           <h2 className='font-serif text-4xl leading-tight font-semibold text-balance'>

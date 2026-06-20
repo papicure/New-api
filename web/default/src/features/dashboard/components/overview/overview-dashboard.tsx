@@ -16,15 +16,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { VChart } from '@visactor/react-vchart'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import {
   ArrowRight,
+  BarChart3,
   BookOpen,
+  Boxes,
   Check,
   ChevronDown,
   ChevronUp,
   Circle,
+  Clock3,
   Copy,
   CreditCard,
   FileText,
@@ -37,22 +41,46 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { CodeBlock } from '@/components/code-block'
 import {
   CardStaggerContainer,
   CardStaggerItem,
 } from '@/components/page-transition'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs'
+import { useTheme } from '@/context/theme-provider'
+import { getUserQuotaDates } from '@/features/dashboard/api'
+import { processChartData } from '@/features/dashboard/lib'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
+import { getAllLogs, getUserLogs } from '@/features/usage-logs/api'
+import { LOG_TYPE_ENUM } from '@/features/usage-logs/constants'
+import type { UsageLog } from '@/features/usage-logs/data/schema'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-import { getUserModels } from '@/lib/api'
+import { getUserGroups, getUserModels } from '@/lib/api'
+import {
+  formatLogQuota,
+  formatNumber,
+  formatQuota,
+  formatTimestampToDate,
+  formatUseTime,
+} from '@/lib/format'
 import { MOTION_TRANSITION } from '@/lib/motion'
 import { ROLE } from '@/lib/roles'
+import { computeTimeRange } from '@/lib/time'
 import { cn } from '@/lib/utils'
+import { VCHART_OPTION } from '@/lib/vchart'
 import { useAuthStore } from '@/stores/auth-store'
 
 import {
@@ -119,6 +147,15 @@ interface HeroSignal {
   icon: LucideIcon
 }
 
+type SetupTool = 'claude' | 'codex'
+type SetupPlatform = 'windows' | 'unix'
+
+type UserGroupMap = Record<string, { desc: string; ratio: number | string }>
+
+let themeManagerPromise: Promise<
+  (typeof import('@visactor/vchart'))['ThemeManager']
+> | null = null
+
 function getSavedSetupGuideExpanded(): boolean | null {
   if (typeof window === 'undefined') return null
   const saved = window.localStorage.getItem(SETUP_GUIDE_VISIBILITY_STORAGE_KEY)
@@ -178,16 +215,86 @@ function buildCurlCommand(args: {
   ].join('\n')
 }
 
+function normalizeBaseUrl(sourceUrl?: string): string {
+  const fallback = `${getCurrentOrigin()}/v1`
+  const trimmed = sourceUrl?.trim()
+  if (!trimmed) return fallback
+
+  const withoutTrailingSlash = trimmed.replace(/\/+$/, '')
+  if (withoutTrailingSlash.endsWith('/v1/chat/completions')) {
+    return withoutTrailingSlash.replace(/\/chat\/completions$/, '')
+  }
+  if (withoutTrailingSlash.endsWith('/v1/messages')) {
+    return withoutTrailingSlash.replace(/\/messages$/, '')
+  }
+  if (withoutTrailingSlash.endsWith('/v1')) return withoutTrailingSlash
+  return `${withoutTrailingSlash}/v1`
+}
+
+function buildSetupCommand(args: {
+  tool: SetupTool
+  platform: SetupPlatform
+  baseUrl: string
+  apiKey: string
+}): string {
+  const quotedKey = args.apiKey || 'sk-...'
+  if (args.tool === 'claude') {
+    if (args.platform === 'windows') {
+      return [
+        `$env:ANTHROPIC_AUTH_TOKEN="${quotedKey}"`,
+        `$env:ANTHROPIC_BASE_URL="${args.baseUrl}"`,
+        'claude "Check this gateway connection"',
+      ].join('\n')
+    }
+
+    return [
+      `export ANTHROPIC_AUTH_TOKEN="${quotedKey}"`,
+      `export ANTHROPIC_BASE_URL="${args.baseUrl}"`,
+      'claude "Check this gateway connection"',
+    ].join('\n')
+  }
+
+  if (args.platform === 'windows') {
+    return [
+      `$env:OPENAI_API_KEY="${quotedKey}"`,
+      `$env:OPENAI_BASE_URL="${args.baseUrl}"`,
+      'codex "Check this gateway connection"',
+    ].join('\n')
+  }
+
+  return [
+    `export OPENAI_API_KEY="${quotedKey}"`,
+    `export OPENAI_BASE_URL="${args.baseUrl}"`,
+    'codex "Check this gateway connection"',
+  ].join('\n')
+}
+
+function getQuotaUsagePercent(remainQuota: number, usedQuota: number): number {
+  const total = remainQuota + usedQuota
+  if (total <= 0) return 0
+  return Math.min(100, Math.max(0, (usedQuota / total) * 100))
+}
+
+function getLogStatusVariant(log: UsageLog): 'success' | 'destructive' | 'info' {
+  if (log.type === LOG_TYPE_ENUM.ERROR) return 'destructive'
+  if (log.type === LOG_TYPE_ENUM.CONSUME) return 'success'
+  return 'info'
+}
+
 function SetupGuideBackdrop(props: { compact?: boolean }) {
   return (
     <>
       <div
         className={cn(
-          'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_48%_120%_at_78%_0%,color-mix(in_oklch,var(--primary)_8%,transparent)_0%,transparent_62%),linear-gradient(112deg,color-mix(in_oklch,var(--card)_98%,var(--primary)_2%)_0%,color-mix(in_oklch,var(--card)_94%,var(--muted)_6%)_48%,color-mix(in_oklch,var(--background)_92%,var(--accent)_8%)_100%)] dark:opacity-65',
+          'from-card via-muted/35 to-background pointer-events-none absolute inset-0 bg-linear-to-br dark:opacity-65',
           props.compact
             ? '[mask-image:linear-gradient(90deg,black_0%,black_48%,transparent_74%)] opacity-55'
             : 'opacity-85'
         )}
+        aria-hidden='true'
+      />
+      <div
+        className='bg-dot-grid pointer-events-none absolute inset-0 opacity-30'
         aria-hidden='true'
       />
       <div
@@ -276,10 +383,13 @@ function StartStepItem(props: {
 function RequestPreview(props: {
   example: RequestExample
   signals: HeroSignal[]
+  baseUrl: string
 }) {
   const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
   const [isCopying, setIsCopying] = useState(false)
+  const [setupTool, setSetupTool] = useState<SetupTool>('claude')
+  const [setupPlatform, setSetupPlatform] = useState<SetupPlatform>('windows')
   const { copyToClipboard } = useCopyToClipboard({ notify: false })
   const previewCurl = buildCurlCommand({
     endpoint: props.example.endpoint,
@@ -287,6 +397,12 @@ function RequestPreview(props: {
     model: props.example.model,
   })
   const previewLines = previewCurl.split('\n')
+  const setupCommand = buildSetupCommand({
+    tool: setupTool,
+    platform: setupPlatform,
+    baseUrl: props.baseUrl,
+    apiKey: props.example.displayKey,
+  })
   const handleCopyRequest = async () => {
     if (!props.example.keyId || isCopying) return
 
@@ -385,6 +501,57 @@ function RequestPreview(props: {
         </div>
       </div>
 
+      <div className='my-3 rounded-xl border bg-muted/25 p-2'>
+        <Tabs
+          value={setupTool}
+          onValueChange={(value) => setSetupTool(value as SetupTool)}
+          className='gap-2'
+        >
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <TabsList className='group-data-horizontal/tabs:h-7'>
+              <TabsTrigger value='claude' className='text-xs'>
+                {t('Claude Code')}
+              </TabsTrigger>
+              <TabsTrigger value='codex' className='text-xs'>
+                {t('Codex')}
+              </TabsTrigger>
+            </TabsList>
+            <div className='bg-muted inline-flex h-7 rounded-lg p-[3px] text-muted-foreground'>
+              <button
+                type='button'
+                className={cn(
+                  'rounded-md px-2 text-xs font-medium transition-colors motion-reduce:transition-none',
+                  setupPlatform === 'windows'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'hover:text-foreground'
+                )}
+                onClick={() => setSetupPlatform('windows')}
+              >
+                {t('Windows')}
+              </button>
+              <button
+                type='button'
+                className={cn(
+                  'rounded-md px-2 text-xs font-medium transition-colors motion-reduce:transition-none',
+                  setupPlatform === 'unix'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'hover:text-foreground'
+                )}
+                onClick={() => setSetupPlatform('unix')}
+              >
+                {t('Linux / macOS')}
+              </button>
+            </div>
+          </div>
+          <TabsContent value='claude' className='mt-2'>
+            <CodeBlock code={setupCommand} language='bash' />
+          </TabsContent>
+          <TabsContent value='codex' className='mt-2'>
+            <CodeBlock code={setupCommand} language='bash' />
+          </TabsContent>
+        </Tabs>
+      </div>
+
       <div className='grid gap-2'>
         {props.signals.map((signal) => {
           const Icon = signal.icon
@@ -454,6 +621,372 @@ function CompactQuickAction(props: { action: QuickAction }) {
   )
 }
 
+function AccountQuotaPanel(props: {
+  apiKeyCount: number
+  groupCount: number
+}) {
+  const { t } = useTranslation()
+  const user = useAuthStore((state) => state.auth.user)
+  const remainQuota = Number(user?.quota ?? 0)
+  const usedQuota = Number(user?.used_quota ?? 0)
+  const quotaPercent = getQuotaUsagePercent(remainQuota, usedQuota)
+  const roleLabel = user?.role && user.role >= ROLE.ADMIN ? 'Admin' : 'User'
+
+  return (
+    <CardStaggerContainer className='grid gap-4 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]'>
+      <CardStaggerItem className='bg-card rounded-2xl border p-4 shadow-xs sm:p-5'>
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-start gap-3'>
+            <span className='bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center rounded-xl'>
+              <ShieldCheck className='size-5' aria-hidden='true' />
+            </span>
+            <div className='min-w-0 flex-1'>
+              <div className='text-muted-foreground text-xs font-medium'>
+                {t('Profile')}
+              </div>
+              <div className='truncate text-lg font-semibold'>
+                {user?.display_name || user?.username || t('Current user')}
+              </div>
+              <div className='text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2 text-xs'>
+                <Badge variant='technical'>{t(roleLabel)}</Badge>
+                {user?.group && (
+                  <Badge variant='technical'>
+                    {t('Group')}: {user.group}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className='grid grid-cols-3 gap-2'>
+            <div className='bg-muted/35 rounded-xl border px-3 py-2'>
+              <div className='text-muted-foreground text-[11px] font-medium'>
+                {t('Requests')}
+              </div>
+              <div className='font-mono text-sm font-semibold tabular-nums'>
+                {formatNumber(Number(user?.request_count ?? 0))}
+              </div>
+            </div>
+            <div className='bg-muted/35 rounded-xl border px-3 py-2'>
+              <div className='text-muted-foreground text-[11px] font-medium'>
+                {t('API Keys')}
+              </div>
+              <div className='font-mono text-sm font-semibold tabular-nums'>
+                {formatNumber(props.apiKeyCount)}
+              </div>
+            </div>
+            <div className='bg-muted/35 rounded-xl border px-3 py-2'>
+              <div className='text-muted-foreground text-[11px] font-medium'>
+                {t('Groups')}
+              </div>
+              <div className='font-mono text-sm font-semibold tabular-nums'>
+                {formatNumber(props.groupCount)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardStaggerItem>
+
+      <CardStaggerItem className='bg-card rounded-2xl border p-4 shadow-xs sm:p-5'>
+        <div className='flex h-full flex-col justify-between gap-4'>
+          <div className='flex flex-wrap items-start justify-between gap-3'>
+            <div>
+              <div className='text-muted-foreground text-xs font-medium'>
+                {t('Subscription and quota')}
+              </div>
+              <div className='mt-1 text-xl font-semibold tracking-tight'>
+                {formatQuota(remainQuota)}
+              </div>
+              <div className='text-muted-foreground mt-1 text-xs'>
+                {t('Remaining quota')}
+              </div>
+            </div>
+            <Badge variant={remainQuota > 0 ? 'success' : 'destructive'}>
+              {remainQuota > 0 ? t('Available') : t('Balance depleted')}
+            </Badge>
+          </div>
+
+          <div className='space-y-2'>
+            <div className='flex items-center justify-between text-xs'>
+              <span className='text-muted-foreground'>{t('Quota used')}</span>
+              <span className='font-mono tabular-nums'>
+                {Math.round(quotaPercent)}%
+              </span>
+            </div>
+            <Progress value={quotaPercent} />
+            <div className='text-muted-foreground flex flex-wrap items-center justify-between gap-2 text-xs'>
+              <span>
+                {t('Used')}: {formatQuota(usedQuota)}
+              </span>
+              <span>
+                {t('Total')}: {formatQuota(remainQuota + usedQuota)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </CardStaggerItem>
+    </CardStaggerContainer>
+  )
+}
+
+function UsageTrendPanel() {
+  const { t } = useTranslation()
+  const { resolvedTheme } = useTheme()
+  const [themeReady, setThemeReady] = useState(false)
+  const themeManagerRef = useRef<
+    (typeof import('@visactor/vchart'))['ThemeManager'] | null
+  >(null)
+  const trendRange = useMemo(() => computeTimeRange(7), [])
+  const trendQuery = useQuery({
+    queryKey: [
+      'dashboard',
+      'overview',
+      'usage-trend',
+      trendRange.start_timestamp,
+      trendRange.end_timestamp,
+    ],
+    queryFn: async () =>
+      getUserQuotaDates({
+        start_timestamp: trendRange.start_timestamp,
+        end_timestamp: trendRange.end_timestamp,
+        default_time: 'day',
+      }),
+    staleTime: 60 * 1000,
+  })
+
+  useEffect(() => {
+    const updateTheme = async () => {
+      setThemeReady(false)
+      if (!themeManagerPromise) {
+        themeManagerPromise = import('@visactor/vchart').then(
+          (m) => m.ThemeManager
+        )
+      }
+
+      const ThemeManager = await themeManagerPromise
+      themeManagerRef.current = ThemeManager
+      ThemeManager.setCurrentTheme(resolvedTheme === 'dark' ? 'dark' : 'light')
+      setThemeReady(true)
+    }
+
+    updateTheme()
+  }, [resolvedTheme])
+
+  const chartData = useMemo(
+    () =>
+      processChartData(
+        trendQuery.data?.data ?? [],
+        'day',
+        t,
+        undefined
+      ),
+    [trendQuery.data?.data, t]
+  )
+
+  const spec = useMemo(
+    () => ({
+      ...chartData.spec_area,
+      title: {
+        visible: false,
+      },
+      legends: { visible: true, orient: 'bottom', selectMode: 'single' },
+      area: {
+        style: {
+          fillOpacity: 0.16,
+          curveType: 'monotone',
+        },
+      },
+      line: {
+        style: {
+          lineWidth: 2,
+          curveType: 'monotone',
+        },
+      },
+      point: { visible: false },
+      background: 'transparent',
+    }),
+    [chartData.spec_area]
+  )
+
+  return (
+    <CardStaggerContainer>
+      <CardStaggerItem className='bg-card rounded-2xl border p-4 shadow-xs sm:p-5'>
+        <div className='flex flex-wrap items-start justify-between gap-3'>
+          <div>
+            <div className='flex items-center gap-2'>
+              <BarChart3 className='text-muted-foreground size-4' />
+              <h3 className='text-base font-semibold'>{t('Usage trend')}</h3>
+            </div>
+            <p className='text-muted-foreground mt-1 text-sm'>
+              {t('Seven-day quota consumption by model')}
+            </p>
+          </div>
+          <Badge variant='technical'>{t('Last 7 days')}</Badge>
+        </div>
+        <div className='mt-3 h-[280px] sm:h-[340px]'>
+          {themeReady && (
+            <VChart
+              key={`${resolvedTheme}-${trendQuery.isLoading ? 'loading' : 'ready'}-${trendQuery.data?.data?.length ?? 0}`}
+              spec={{
+                ...spec,
+                theme: resolvedTheme === 'dark' ? 'dark' : 'light',
+              }}
+              option={VCHART_OPTION}
+            />
+          )}
+        </div>
+      </CardStaggerItem>
+    </CardStaggerContainer>
+  )
+}
+
+function RecentRequestsPanel(props: { isAdmin: boolean }) {
+  const { t } = useTranslation()
+  const logsQuery = useQuery({
+    queryKey: ['dashboard', 'overview', 'recent-requests', props.isAdmin],
+    queryFn: async () => {
+      const result = props.isAdmin
+        ? await getAllLogs({ p: 1, page_size: 6 })
+        : await getUserLogs({ p: 1, page_size: 6 })
+      return result.success ? ((result.data?.items ?? []) as UsageLog[]) : []
+    },
+    staleTime: 30 * 1000,
+  })
+
+  const logs = logsQuery.data ?? []
+
+  return (
+    <CardStaggerItem className='bg-card rounded-2xl border p-4 shadow-xs sm:p-5'>
+      <div className='mb-3 flex items-center justify-between gap-3'>
+        <div>
+          <div className='flex items-center gap-2'>
+            <Clock3 className='text-muted-foreground size-4' />
+            <h3 className='text-base font-semibold'>
+              {t('Recent requests')}
+            </h3>
+          </div>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            {t('Latest gateway activity')}
+          </p>
+        </div>
+        <Button variant='outline' size='sm' render={<Link to='/usage-logs' />}>
+          {t('View all')}
+        </Button>
+      </div>
+
+      <div className='overflow-hidden rounded-xl border'>
+        <div className='bg-table-header text-muted-foreground grid grid-cols-[minmax(0,1fr)_5rem_6rem] gap-3 border-b px-3 py-2 text-xs font-medium sm:grid-cols-[minmax(0,1fr)_7rem_7rem_6rem]'>
+          <span>{t('Model')}</span>
+          <span className='hidden sm:block'>{t('Group')}</span>
+          <span>{t('Latency')}</span>
+          <span className='text-right'>{t('Cost')}</span>
+        </div>
+        {logs.length > 0 ? (
+          logs.map((log) => (
+            <div
+              key={log.id}
+              className='grid grid-cols-[minmax(0,1fr)_5rem_6rem] gap-3 border-b px-3 py-2.5 text-sm last:border-b-0 sm:grid-cols-[minmax(0,1fr)_7rem_7rem_6rem]'
+            >
+              <div className='min-w-0'>
+                <div className='flex min-w-0 items-center gap-2'>
+                  <span
+                    className={cn(
+                      'size-1.5 shrink-0 rounded-full',
+                      log.type === LOG_TYPE_ENUM.ERROR
+                        ? 'bg-destructive'
+                        : 'bg-success'
+                    )}
+                    aria-hidden='true'
+                  />
+                  <span className='truncate font-medium'>
+                    {log.model_name || t('Unknown model')}
+                  </span>
+                </div>
+                <div className='text-muted-foreground mt-0.5 truncate font-mono text-[11px]'>
+                  {log.request_id || formatTimestampToDate(log.created_at)}
+                </div>
+              </div>
+              <div className='hidden min-w-0 items-center sm:flex'>
+                <Badge variant='technical'>{log.group || t('Default')}</Badge>
+              </div>
+              <div className='flex items-center'>
+                <Badge variant={getLogStatusVariant(log)}>
+                  {formatUseTime(Number(log.use_time) || 0)}
+                </Badge>
+              </div>
+              <div className='flex items-center justify-end font-mono text-xs tabular-nums'>
+                {formatLogQuota(Number(log.quota) || 0)}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className='text-muted-foreground px-3 py-8 text-center text-sm'>
+            {logsQuery.isLoading
+              ? t('Loading')
+              : t('No recent requests yet')}
+          </div>
+        )}
+      </div>
+    </CardStaggerItem>
+  )
+}
+
+function GroupsPanel(props: { groups: UserGroupMap }) {
+  const { t } = useTranslation()
+  const entries = Object.entries(props.groups).slice(0, 6)
+
+  return (
+    <CardStaggerItem className='bg-card rounded-2xl border p-4 shadow-xs sm:p-5'>
+      <div className='mb-3 flex items-center justify-between gap-3'>
+        <div>
+          <div className='flex items-center gap-2'>
+            <Boxes className='text-muted-foreground size-4' />
+            <h3 className='text-base font-semibold'>{t('Groups')}</h3>
+          </div>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            {t('Available routing groups')}
+          </p>
+        </div>
+        <Badge variant='technical'>
+          {formatNumber(entries.length)} {t('visible')}
+        </Badge>
+      </div>
+
+      <div className='grid gap-2'>
+        {entries.length > 0 ? (
+          entries.map(([name, group]) => (
+            <div
+              key={name}
+              className='bg-muted/25 flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5'
+            >
+              <div className='min-w-0'>
+                <div className='flex items-center gap-2'>
+                  <span
+                    className='bg-success size-1.5 rounded-full'
+                    aria-hidden='true'
+                  />
+                  <span className='truncate text-sm font-medium'>{name}</span>
+                </div>
+                <div className='text-muted-foreground mt-0.5 line-clamp-1 text-xs'>
+                  {group.desc || t('No description')}
+                </div>
+              </div>
+              <div className='flex shrink-0 items-center gap-2'>
+                <Badge variant='technical'>{group.ratio}x</Badge>
+                <Badge variant='technical'>/v1</Badge>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className='text-muted-foreground rounded-xl border px-3 py-8 text-center text-sm'>
+            {t('No groups available')}
+          </div>
+        )}
+      </div>
+    </CardStaggerItem>
+  )
+}
+
 export function OverviewDashboard() {
   const { t } = useTranslation()
   const user = useAuthStore((state) => state.auth.user)
@@ -480,6 +1013,15 @@ export function OverviewDashboard() {
       return result.success ? (result.data?.items ?? []) : []
     },
     staleTime: 60 * 1000,
+  })
+
+  const groupsQuery = useQuery({
+    queryKey: ['dashboard', 'overview', 'user-groups'],
+    queryFn: async () => {
+      const result = await getUserGroups()
+      return result.success ? (result.data ?? {}) : {}
+    },
+    staleTime: 5 * 60 * 1000,
   })
 
   const modelsQuery = useQuery({
@@ -598,6 +1140,12 @@ export function OverviewDashboard() {
     }
   }, [apiInfoItems, modelsQuery.data, preferredKey, t])
 
+  const baseUrl = useMemo(
+    () => normalizeBaseUrl(apiInfoItems[0]?.url),
+    [apiInfoItems]
+  )
+  const userGroups = (groupsQuery.data ?? {}) as UserGroupMap
+
   const completedStepCount = startSteps.filter((step) => step.completed).length
   const setupComplete = completedStepCount === startSteps.length
   const setupStatusReady = apiKeysQuery.isFetched && Boolean(user)
@@ -668,6 +1216,7 @@ export function OverviewDashboard() {
                 <RequestPreview
                   example={requestExample}
                   signals={heroSignals}
+                  baseUrl={baseUrl}
                 />
               </div>
             </div>
@@ -746,6 +1295,18 @@ export function OverviewDashboard() {
       )}
 
       <SummaryCards />
+
+      <AccountQuotaPanel
+        apiKeyCount={apiKeysQuery.data?.length ?? 0}
+        groupCount={Object.keys(userGroups).length}
+      />
+
+      <UsageTrendPanel />
+
+      <CardStaggerContainer className='grid gap-4 xl:grid-cols-[minmax(0,1fr)_24rem]'>
+        <RecentRequestsPanel isAdmin={isAdmin} />
+        <GroupsPanel groups={userGroups} />
+      </CardStaggerContainer>
 
       {showContentPanels && (
         <CardStaggerContainer

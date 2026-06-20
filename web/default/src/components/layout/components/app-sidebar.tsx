@@ -23,6 +23,7 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { useLayout } from '@/context/layout-provider'
 import { useSidebarView } from '@/hooks/use-sidebar-view'
@@ -59,8 +60,13 @@ export function AppSidebar() {
       {view ? (
         <SidebarViewHeader view={view} />
       ) : (
-        <SidebarHeader className='px-2 pt-2 pb-1'>
-          <SystemBrand />
+        <SidebarHeader className='border-sidebar-border border-b px-2 py-2'>
+          <div className='flex min-w-0 items-center gap-1'>
+            <div className='min-w-0 flex-1'>
+              <SystemBrand />
+            </div>
+            <SidebarTrigger className='size-8 shrink-0 group-data-[collapsible=icon]:hidden' />
+          </div>
         </SidebarHeader>
       )}
 

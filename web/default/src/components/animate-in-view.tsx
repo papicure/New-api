@@ -52,11 +52,24 @@ export function AnimateInView(props: AnimateInViewProps) {
       return
     }
 
+    const rect = el.getBoundingClientRect()
+    const isAlreadyVisible =
+      rect.top < window.innerHeight * 0.92 && rect.bottom > window.innerHeight * 0.08
+
+    const reveal = () => {
+      el.classList.remove('opacity-0')
+      el.classList.add(`landing-animate-${animation}`)
+    }
+
+    if (isAlreadyVisible) {
+      window.requestAnimationFrame(reveal)
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.classList.remove('opacity-0')
-          el.classList.add(`landing-animate-${animation}`)
+          reveal()
           if (once) observer.unobserve(el)
         } else if (!once) {
           el.classList.add('opacity-0')

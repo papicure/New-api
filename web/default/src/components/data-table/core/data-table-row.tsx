@@ -56,7 +56,7 @@ function DataTableRowInner<TData>({
   return (
     <TableRow
       data-state={isSelected ? 'selected' : undefined}
-      className={className}
+      className={cn('border-border/60 hover:bg-table-header', className)}
       {...rowProps}
     >
       {row.getVisibleCells().map((cell) => {
