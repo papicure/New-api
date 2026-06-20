@@ -22,10 +22,12 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Dialog } from '@/components/dialog'
+import { Turnstile } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCountdown } from '@/hooks/use-countdown'
+import { useTurnstile } from '@/features/auth/hooks/use-turnstile'
 
 import { sendEmailVerification, bindEmail } from '../../api'
 
@@ -52,6 +54,13 @@ export function EmailBindDialog({
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const {
+    isTurnstileEnabled,
+    turnstileSiteKey,
+    turnstileToken,
+    setTurnstileToken,
+    validateTurnstile,
+  } = useTurnstile()
+  const {
     secondsLeft,
     isActive,
     start: startCountdown,
@@ -66,9 +75,13 @@ export function EmailBindDialog({
       return
     }
 
+    if (!validateTurnstile()) {
+      return
+    }
+
     try {
       setSendingCode(true)
-      const response = await sendEmailVerification(email)
+      const response = await sendEmailVerification(email, turnstileToken)
 
       if (response.success) {
         toast.success(t('Verification code sent! Please check your email.'))
@@ -171,6 +184,14 @@ export function EmailBindDialog({
             disabled={loading}
           />
         </div>
+
+        {isTurnstileEnabled && (
+          <Turnstile
+            siteKey={turnstileSiteKey}
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken('')}
+          />
+        )}
 
         <div className='space-y-2'>
           <Label htmlFor='code'>{t('Verification Code')}</Label>
