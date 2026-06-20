@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -59,7 +60,9 @@ export function HelpMenu() {
         <CircleHelp className='size-4' />
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' sideOffset={8} className='w-52'>
-        <DropdownMenuLabel>{t('Help & support')}</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{t('Help & support')}</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
 
         {docsLink && (
