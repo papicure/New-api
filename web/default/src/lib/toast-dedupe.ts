@@ -61,6 +61,13 @@ function buildDedupeId(variant: ToastVariant, message: unknown): string | null {
 
 type ToastFn = (message: unknown, options?: ToastOptions) => unknown
 
+// Suppress an identical message+variant fired again within this window. This
+// is what actually collapses the "interceptor toast + component toast" pair,
+// since relying solely on sonner's id-merge proved unreliable across its
+// async publish cycle.
+const DEDUPE_WINDOW_MS = 1500
+const recent = new Map<string, number>()
+
 function wrap(original: ToastFn, variant: ToastVariant): ToastFn {
   return (message: unknown, options?: ToastOptions) => {
     // Respect explicit ids supplied by the caller.
@@ -73,6 +80,24 @@ function wrap(original: ToastFn, variant: ToastVariant): ToastFn {
       return original(message, options)
     }
 
+    const now = Date.now()
+    const last = recent.get(id)
+    if (last !== undefined && now - last < DEDUPE_WINDOW_MS) {
+      // Within the window: skip the duplicate but refresh the existing toast
+      // so its dismiss timer restarts, keeping behaviour predictable.
+      recent.set(id, now)
+      return id
+    }
+    recent.set(id, now)
+
+    // Opportunistic cleanup so the map cannot grow unbounded.
+    if (recent.size > 200) {
+      for (const [key, ts] of recent) {
+        if (now - ts >= DEDUPE_WINDOW_MS) recent.delete(key)
+      }
+    }
+
+    // Also pass a stable id so any genuinely concurrent calls merge in sonner.
     return original(message, { ...options, id })
   }
 }

@@ -27,7 +27,7 @@ func BuildBrandedEmail(heading string, preheader string, innerHTML string) strin
 	if Logo != "" {
 		logoBlock = fmt.Sprintf(
 			`<img src="%s" alt="%s" height="36" style="display:inline-block;height:36px;max-height:36px;border:0;outline:none;text-decoration:none;" />`,
-			Logo, htmlEscapeText(brand),
+			htmlEscapeText(Logo), htmlEscapeText(brand),
 		)
 	}
 
