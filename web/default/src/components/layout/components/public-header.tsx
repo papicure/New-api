@@ -186,7 +186,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             className={cn(
               'flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
               scrolled
-                ? 'bg-background/60 ring-border/50 shadow-soft h-12 rounded-2xl pr-1.5 pl-4 ring-[0.5px] backdrop-blur-2xl'
+                ? 'bg-background/70 ring-border/60 shadow-soft h-12 rounded-full pr-1.5 pl-4 ring-[0.5px] backdrop-blur-2xl'
                 : 'h-16 px-2'
             )}
           >
@@ -209,7 +209,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   />
                 )}
               </div>
-              <span className='text-sm font-semibold tracking-tight'>
+              <span className='font-serif text-base font-semibold tracking-tight'>
                 {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
               </span>
             </Link>
@@ -229,7 +229,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                       tabIndex={link.disabled ? -1 : undefined}
                       onClick={(event) => handleNavLinkClick(event, link)}
                       className={cn(
-                        'link-underline text-muted-foreground hover:text-foreground rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
+                        'text-muted-foreground hover:text-foreground hover:bg-accent rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
                         link.disabled && 'pointer-events-none opacity-50'
                       )}
                     >
@@ -245,10 +245,10 @@ export function PublicHeader(props: PublicHeaderProps) {
                     onClick={(event) => handleNavLinkClick(event, link)}
                     data-active={isActive}
                     className={cn(
-                      'link-underline rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
+                      'rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
                       isActive
-                        ? 'text-foreground'
-                        : 'text-muted-foreground hover:text-foreground',
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent',
                       link.disabled && 'pointer-events-none opacity-50'
                     )}
                   >

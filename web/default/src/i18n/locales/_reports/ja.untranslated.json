@@ -1,4 +1,14 @@
 {
+  "API Keys management": "API Keys management",
+  "API Key list": "API Key list",
+  "Available groups": "Available groups",
+  "Groups define model access, billing source, and base rate": "Groups define model access, billing source, and base rate",
+  "Created {{count}} / max {{max}}": "Created {{count}} / max {{max}}",
+  "Manage keys, group order, and budget": "Manage keys, group order, and budget",
+  "Primary group": "Primary group",
+  "Budget": "Budget",
+  "All models": "All models",
+  "No description": "No description",
   "Documentation": "Documentation",
   "Top up balance": "Top up balance",
   "Help & support": "Help & support"
