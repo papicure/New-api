@@ -166,7 +166,12 @@ export function Captcha({
               challenge: data.challenge,
               offline: false,
               new_captcha: data.new_captcha === 1,
-              product: 'bind',
+              // 'popup' renders a clickable button that opens the slider in a
+              // popup. Unlike 'bind' (which renders no UI and must be triggered
+              // imperatively), this fits the passive token model used by the
+              // other providers: the button is visible, solving it fills the
+              // token, then the user submits the form.
+              product: 'popup',
               lang: geetestLang(),
               https: true,
               width: '100%',
