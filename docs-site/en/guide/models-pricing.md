@@ -8,26 +8,18 @@ title: "Models and pricing"
 
 > Available models are shown in the PaPiCode console. Actual credit usage depends on model, tokens, cache, tools, and account group.
 
-Type
+::: tip Billing note
+Each call is metered by input tokens, output tokens, cache tokens, tool calls, and the account group multiplier.
+:::
 
-Description
-
-Best for
-
-High-performance
-
-Complex reasoning, coding, long-context tasks.
-
-Claude Code, Codex CLI, Cursor Agent
-
-Lightweight
-
-Fast and economical for routine tasks.
-
-Chat, summarization, batch jobs
-
-Multimodal
-
-Image understanding or generation capabilities.
-
-Screenshot analysis, visual workflows
+<CardGrid :cols="3">
+  <FeatureCard title="High-performance" eyebrow="Complex tasks">
+    Built for reasoning, coding, and long-context work. Common in Claude Code, Codex CLI, and Cursor Agent flows.
+  </FeatureCard>
+  <FeatureCard title="Lightweight" eyebrow="Low cost">
+    Fast and economical. Fits routine chat, summarization, and high-volume batch jobs.
+  </FeatureCard>
+  <FeatureCard title="Multimodal" eyebrow="Vision">
+    Image understanding or generation capabilities for screenshot analysis and visual workflows.
+  </FeatureCard>
+</CardGrid>

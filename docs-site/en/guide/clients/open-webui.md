@@ -6,11 +6,15 @@ title: "Use PaPiCode in Open WebUI"
 
 # Use PaPiCode in Open WebUI
 
-> Connect Open WebUI to PaPiCode through its OpenAI-compatible settings.
+> Connect Open WebUI to PaPiCode through its OpenAI-compatible settings — a good fit for shared team chat surfaces.
 
-```
+## Environment variables
+
+```bash
 OPENAI_API_BASE_URL=https://www.papicure.de/v1
 OPENAI_API_KEY=YOUR_API_KEY
 ```
 
-You can also add the provider from the Open WebUI admin settings.
+## Admin UI
+
+Add a new OpenAI-compatible connection from the Open WebUI admin panel and fill in the Base URL and API key.

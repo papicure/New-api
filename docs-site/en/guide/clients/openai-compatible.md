@@ -10,15 +10,15 @@ title: "OpenAI-compatible integration"
 
 ## General configuration
 
-Base URL`https://www.papicure.de/v1`
-
-API Key`YOUR_API_KEY`
-
-Chat Endpoint`/chat/completions`
+| Field | Value |
+| --- | --- |
+| **Base URL** | `https://www.papicure.de/v1` |
+| **API Key** | `YOUR_API_KEY` |
+| **Chat Endpoint** | `/chat/completions` |
 
 ## Node.js example
 
-```
+```js
 import OpenAI from "openai";
 
 const client = new OpenAI({
@@ -34,7 +34,7 @@ const res = await client.chat.completions.create({
 
 ## Python example
 
-```
+```python
 from openai import OpenAI
 
 client = OpenAI(

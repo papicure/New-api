@@ -8,14 +8,11 @@ title: "Use PaPiCode in Cherry Studio"
 
 > Cherry Studio supports custom OpenAI-compatible providers.
 
-**Add provider**
+<div class="steps">
 
-Select OpenAI Compatible or a custom provider.
+1. **Add provider** — Select OpenAI Compatible or a custom provider entry.
+2. **Set endpoint** — `https://www.papicure.de/v1`
+3. **Set key** — Paste the API key from the PaPiCode console.
+4. **Sync models** — If the client supports model list sync, refresh to load available models.
 
-**Set endpoint**
-
-`https://www.papicure.de/v1`
-
-**Set key**
-
-Use your PaPiCode API key.
+</div>

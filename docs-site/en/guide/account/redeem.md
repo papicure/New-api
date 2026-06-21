@@ -8,14 +8,10 @@ title: "Redeem codes"
 
 > PaPiCode currently recommends redeem codes for wallet top-ups.
 
-**Get a redeem code**
+<div class="steps">
 
-Use the purchase entry shown in the wallet page.
+1. **Get a redeem code** — Use the purchase entry shown in the wallet page.
+2. **Open wallet** — Sign in and go to Wallet / Top-up.
+3. **Redeem** — Submit the code and credits will be added to your balance.
 
-**Open wallet**
-
-Sign in and go to Wallet / Top-up.
-
-**Redeem**
-
-Submit the code and credits will be added to your balance.
+</div>

@@ -8,38 +8,20 @@ title: "Subscription plans"
 
 > Subscriptions provide a dedicated credit pool for a fixed period and may include a higher-tier usage experience.
 
-Plan
-
-Best for
-
-Description
-
-Trial
-
-新用户测试
-
-低成本验证接口和模型效果。
-
-Basic
-
-个人轻量使用
-
-适合偶尔使用客户端工具。
-
-Standard
-
-日常开发
-
-适合日常编码、文档处理和 AI 助手调用。
-
-Pro
-
-高频开发者
-
-适合 Claude Code、Codex CLI、Cursor 高频使用。
-
-Team
-
-小团队
-
-适合多人共享和多个 API Key 使用。
+<CardGrid :cols="3">
+  <FeatureCard title="Trial" eyebrow="New users">
+    A low-cost way to validate the API and try models before committing.
+  </FeatureCard>
+  <FeatureCard title="Basic" eyebrow="Light usage">
+    Fits occasional client tool usage and small personal workflows.
+  </FeatureCard>
+  <FeatureCard title="Standard" eyebrow="Daily dev">
+    Built for daily coding, document processing, and assistant calls.
+  </FeatureCard>
+  <FeatureCard title="Pro" eyebrow="Heavy users">
+    Tuned for high-frequency Claude Code, Codex CLI, and Cursor sessions.
+  </FeatureCard>
+  <FeatureCard title="Team" eyebrow="Small teams">
+    Designed for shared usage across multiple people and multiple API keys.
+  </FeatureCard>
+</CardGrid>

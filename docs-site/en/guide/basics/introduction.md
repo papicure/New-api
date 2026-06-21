@@ -8,28 +8,32 @@ title: "AI connectivity powered by token credits"
 
 > PaPiCode is an AI API gateway and credit distribution platform for developers and teams, with OpenAI-compatible endpoints, API key management, token-based billing, subscription plans, and redeem codes.
 
-[Start integrating](/en/guide/quickstart) [Open console](https://www.papicure.de)
+<div class="pp-hero-actions">
 
-### Unified API gateway
+[Start integrating](/en/guide/quickstart){.pp-btn-primary} [Open console](https://www.papicure.de){.pp-btn-secondary}
 
-Use one OpenAI-compatible endpoint across multiple models and developer tools.
+</div>
 
-### Token credit billing
-
-Manage usage with wallet balance, subscriptions, and redeem codes.
-
-### Secure key management
-
-Create separate API keys for clients, projects, and team workflows.
+<CardGrid :cols="3">
+  <FeatureCard title="Unified API gateway" eyebrow="Gateway">
+    One OpenAI-compatible endpoint across multiple models and developer tools.
+  </FeatureCard>
+  <FeatureCard title="Token credit billing" eyebrow="Billing">
+    Manage usage with wallet balance, subscriptions, and redeem codes.
+  </FeatureCard>
+  <FeatureCard title="Secure key management" eyebrow="Security">
+    Create separate API keys for clients, projects, and team workflows.
+  </FeatureCard>
+</CardGrid>
 
 ## Core configuration
 
-Base URL`https://www.papicure.de/v1`
+| Field | Value |
+| --- | --- |
+| **Base URL** | `https://www.papicure.de/v1` |
+| **API Key** | Your PaPiCode key |
+| **Protocol** | OpenAI Compatible |
 
-API Key`Your PaPiCode key`
-
-Protocol`OpenAI Compatible`
-
-**Usage notice**
-
+::: tip Usage notice
 PaPiCode is intended for overseas users and overseas Chinese developers. You are responsible for complying with local laws, platform rules, and upstream provider terms.
+:::
