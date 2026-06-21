@@ -40,6 +40,7 @@ import { ERROR_MESSAGES } from '../constants'
 import { type ApiKey } from '../types'
 import { ApiKeysBatchDeleteDialog } from './api-keys-batch-delete-dialog'
 import { ApiKeysCardList } from './api-keys-card-list'
+import { ApiKeysEndpointsCard } from './api-keys-endpoints-card'
 import { ApiKeysGroupsGrid } from './api-keys-groups-grid'
 import { useApiKeys } from './api-keys-provider'
 
@@ -161,6 +162,9 @@ export function ApiKeysOverview() {
 
       {/* Available groups */}
       <ApiKeysGroupsGrid />
+
+      {/* API endpoints (admin-editable, hidden when none configured) */}
+      <ApiKeysEndpointsCard />
 
       {/* API key list */}
       <section className='bg-card rounded-2xl border p-4 shadow-xs sm:p-5'>
