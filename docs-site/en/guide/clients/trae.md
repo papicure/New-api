@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Trae"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Trae
 
 > Add PaPiCode as a custom OpenAI-compatible model provider in Trae.

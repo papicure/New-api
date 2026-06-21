@@ -2,6 +2,8 @@
 title: "Privacy Policy"
 ---
 
+<PageBadge variant="success">Legal</PageBadge>
+
 # Privacy Policy
 
 > We value account, key, and usage data security.

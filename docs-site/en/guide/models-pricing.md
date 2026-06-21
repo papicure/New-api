@@ -2,6 +2,8 @@
 title: "Models and pricing"
 ---
 
+<PageBadge variant="info">Models</PageBadge>
+
 # Models and pricing
 
 > Available models are shown in the PaPiCode console. Actual credit usage depends on model, tokens, cache, tools, and account group.

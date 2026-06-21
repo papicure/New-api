@@ -2,6 +2,8 @@
 title: "LangChain and SDK integration"
 ---
 
+<PageBadge>SDK</PageBadge>
+
 # LangChain and SDK integration
 
 > Any SDK that supports a custom OpenAI-compatible Base URL can connect to PaPiCode.

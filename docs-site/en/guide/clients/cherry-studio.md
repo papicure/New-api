@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Cherry Studio"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Cherry Studio
 
 > Cherry Studio supports custom OpenAI-compatible providers.

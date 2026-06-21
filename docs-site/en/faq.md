@@ -2,6 +2,8 @@
 title: "Frequently asked questions"
 ---
 
+<PageBadge variant="info">FAQ</PageBadge>
+
 # Frequently asked questions
 
 > Common questions about using PaPiCode.

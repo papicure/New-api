@@ -2,6 +2,8 @@
 title: "Redeem codes"
 ---
 
+<PageBadge variant="info">Top up</PageBadge>
+
 # Redeem codes
 
 > PaPiCode currently recommends redeem codes for wallet top-ups.

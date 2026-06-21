@@ -2,6 +2,8 @@
 title: "Groups and routes"
 ---
 
+<PageBadge variant="success">Route</PageBadge>
+
 # Groups and routes
 
 > Groups represent different usage tiers. Users do not need to understand internal routing details.

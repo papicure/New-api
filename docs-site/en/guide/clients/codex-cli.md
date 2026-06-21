@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Codex CLI"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Codex CLI
 
 > If your Codex CLI setup supports OpenAI-compatible configuration, use PaPiCode as the custom API entry.

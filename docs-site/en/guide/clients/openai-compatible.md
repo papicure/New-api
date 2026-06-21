@@ -2,6 +2,8 @@
 title: "OpenAI-compatible integration"
 ---
 
+<PageBadge>SDK</PageBadge>
+
 # OpenAI-compatible integration
 
 > Most clients that support a custom OpenAI Base URL can use PaPiCode directly.

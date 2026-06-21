@@ -2,6 +2,8 @@
 title: "AI connectivity powered by token credits"
 ---
 
+<PageBadge>PaPiCode Docs</PageBadge>
+
 # AI connectivity powered by token credits
 
 > PaPiCode is an AI API gateway and credit distribution platform for developers and teams, with OpenAI-compatible endpoints, API key management, token-based billing, subscription plans, and redeem codes.

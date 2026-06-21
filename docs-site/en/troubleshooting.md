@@ -2,6 +2,8 @@
 title: "Troubleshooting"
 ---
 
+<PageBadge variant="neutral">Triage</PageBadge>
+
 # Troubleshooting
 
 > Use this checklist when a client cannot call the API, returns errors, or consumes credits unexpectedly.

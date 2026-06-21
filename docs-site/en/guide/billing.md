@@ -2,6 +2,8 @@
 title: "How wallet and subscription credits are consumed"
 ---
 
+<PageBadge variant="info">Billing</PageBadge>
+
 # How wallet and subscription credits are consumed
 
 > PaPiCode uses token credits for billing. Wallet balance and subscription credits are separate funding sources.

@@ -2,6 +2,8 @@
 title: "Terms of Service"
 ---
 
+<PageBadge variant="success">Legal</PageBadge>
+
 # Terms of Service
 
 > Please read and agree to the Terms before using PaPiCode.

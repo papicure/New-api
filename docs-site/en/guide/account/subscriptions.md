@@ -2,6 +2,8 @@
 title: "Subscription plans"
 ---
 
+<PageBadge variant="info">Plans</PageBadge>
+
 # Subscription plans
 
 > Subscriptions provide a dedicated credit pool for a fixed period and may include a higher-tier usage experience.

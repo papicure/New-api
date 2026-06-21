@@ -2,6 +2,8 @@
 title: "Use PaPiCode in CodeBuddy"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in CodeBuddy
 
 > If your CodeBuddy version supports custom models, OpenAI Compatible providers, or custom API endpoints, configure PaPiCode as a provider.

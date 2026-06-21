@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Claude Code"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Claude Code
 
 > If your Claude Code version supports custom compatible endpoints, configure the PaPiCode URL and API key.

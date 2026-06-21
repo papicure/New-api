@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Open WebUI"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Open WebUI
 
 > Connect Open WebUI to PaPiCode through its OpenAI-compatible settings.

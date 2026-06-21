@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Chatbox"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Chatbox
 
 > Chatbox can connect to custom OpenAI API hosts.

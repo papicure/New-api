@@ -2,6 +2,8 @@
 title: "Manage Claude Code profiles with CC Switch"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Manage Claude Code profiles with CC Switch
 
 > Use CC Switch to keep PaPiCode as a separate profile and switch between providers safely.

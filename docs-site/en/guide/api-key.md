@@ -2,6 +2,8 @@
 title: "Create and manage API keys"
 ---
 
+<PageBadge>API Key</PageBadge>
+
 # Create and manage API keys
 
 > API keys authenticate client requests. Create separate keys for different tools and projects.

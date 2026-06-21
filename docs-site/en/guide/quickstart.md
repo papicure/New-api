@@ -2,6 +2,8 @@
 title: "Make your first request in 5 minutes"
 ---
 
+<PageBadge>Quickstart</PageBadge>
+
 # Make your first request in 5 minutes
 
 > Create an account, get an API key, and call PaPiCode from any OpenAI-compatible client.

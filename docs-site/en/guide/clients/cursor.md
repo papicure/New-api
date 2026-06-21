@@ -2,6 +2,8 @@
 title: "Use PaPiCode in Cursor"
 ---
 
+<PageBadge variant="info">Client</PageBadge>
+
 # Use PaPiCode in Cursor
 
 > Configure PaPiCode as an OpenAI-compatible custom provider in Cursor.
