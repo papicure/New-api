@@ -1,0 +1,259 @@
+/*
+ * PaPiCode Docs — original VitePress theme tuned to match the main console.
+ *
+ * Color system mirrors the console's terracotta preset (oklch warm neutrals +
+ * 0.56 0.13 42 / 0.68 0.14 48 brand accent). Layout uses the same 1rem radius
+ * and warm canvas as the dashboard, so navigating between console and docs
+ * feels like one product.
+ */
+
+/* ----- Color tokens ------------------------------------------------------- */
+:root {
+  /* Brand — terracotta */
+  --vp-c-brand-1: oklch(0.56 0.13 42);
+  --vp-c-brand-2: oklch(0.62 0.14 44);
+  --vp-c-brand-3: oklch(0.68 0.14 48);
+  --vp-c-brand-soft: oklch(0.56 0.13 42 / 0.14);
+
+  /* Surfaces — warm cream canvas with subtle layers */
+  --vp-c-bg: oklch(0.985 0.006 75);
+  --vp-c-bg-alt: oklch(0.962 0.01 72);
+  --vp-c-bg-soft: oklch(0.972 0.008 73);
+  --vp-c-bg-elv: oklch(0.997 0.004 80);
+
+  --vp-c-text-1: oklch(0.255 0.012 55);
+  --vp-c-text-2: oklch(0.42 0.018 55);
+  --vp-c-text-3: oklch(0.55 0.022 55);
+
+  --vp-c-border: oklch(0.91 0.012 70);
+  --vp-c-divider: oklch(0.93 0.01 70);
+  --vp-c-gutter: oklch(0.95 0.008 72);
+
+  /* Status — keep semantic accents close to the console */
+  --vp-c-tip-1: var(--vp-c-brand-1);
+  --vp-c-tip-soft: var(--vp-c-brand-soft);
+
+  /* Hero gradient — terracotta into warm gold */
+  --vp-home-hero-name-background: linear-gradient(
+    120deg,
+    oklch(0.56 0.13 42) 0%,
+    oklch(0.7 0.14 60) 60%,
+    oklch(0.78 0.1 75) 100%
+  );
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-image-background-image: radial-gradient(
+    ellipse at center,
+    oklch(0.56 0.13 42 / 0.45),
+    oklch(0.68 0.14 48 / 0.15) 50%,
+    transparent 75%
+  );
+  --vp-home-hero-image-filter: blur(64px);
+
+  /* Custom block backgrounds (info/tip/warning callouts) */
+  --vp-custom-block-tip-bg: oklch(0.56 0.13 42 / 0.08);
+  --vp-custom-block-tip-border: oklch(0.56 0.13 42 / 0.32);
+  --vp-custom-block-tip-text: oklch(0.4 0.1 42);
+
+  /* Radius — match the console's 1rem language */
+  --vp-layout-max-width: 1440px;
+}
+
+.dark {
+  --vp-c-brand-1: oklch(0.78 0.135 52);
+  --vp-c-brand-2: oklch(0.72 0.14 48);
+  --vp-c-brand-3: oklch(0.68 0.14 48);
+  --vp-c-brand-soft: oklch(0.68 0.14 48 / 0.2);
+
+  --vp-c-bg: oklch(0.22 0.008 50);
+  --vp-c-bg-alt: oklch(0.2 0.008 50);
+  --vp-c-bg-soft: oklch(0.245 0.009 50);
+  --vp-c-bg-elv: oklch(0.265 0.01 50);
+
+  --vp-c-text-1: oklch(0.94 0.008 75);
+  --vp-c-text-2: oklch(0.78 0.01 70);
+  --vp-c-text-3: oklch(0.62 0.012 65);
+
+  --vp-c-border: oklch(1 0 0 / 0.12);
+  --vp-c-divider: oklch(1 0 0 / 0.08);
+  --vp-c-gutter: oklch(1 0 0 / 0.04);
+
+  --vp-home-hero-name-background: linear-gradient(
+    120deg,
+    oklch(0.78 0.135 52) 0%,
+    oklch(0.82 0.12 65) 55%,
+    oklch(0.88 0.08 80) 100%
+  );
+  --vp-home-hero-image-background-image: radial-gradient(
+    ellipse at center,
+    oklch(0.68 0.14 48 / 0.5),
+    oklch(0.78 0.135 52 / 0.18) 50%,
+    transparent 75%
+  );
+  --vp-home-hero-image-filter: blur(80px);
+
+  --vp-custom-block-tip-bg: oklch(0.68 0.14 48 / 0.12);
+  --vp-custom-block-tip-border: oklch(0.68 0.14 48 / 0.35);
+  --vp-custom-block-tip-text: oklch(0.86 0.08 55);
+}
+
+/* Button — terracotta-filled call to action */
+:root {
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: oklch(0.99 0.005 80);
+  --vp-button-brand-bg: var(--vp-c-brand-1);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: oklch(0.99 0.005 80);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: oklch(0.99 0.005 80);
+  --vp-button-brand-active-bg: var(--vp-c-brand-1);
+
+  --vp-button-alt-border: var(--vp-c-border);
+  --vp-button-alt-text: var(--vp-c-text-1);
+  --vp-button-alt-bg: var(--vp-c-bg-elv);
+  --vp-button-alt-hover-border: var(--vp-c-brand-soft);
+  --vp-button-alt-hover-text: var(--vp-c-brand-1);
+  --vp-button-alt-hover-bg: var(--vp-c-bg-elv);
+}
+.dark {
+  --vp-button-brand-text: oklch(0.18 0.01 50);
+  --vp-button-brand-hover-text: oklch(0.18 0.01 50);
+  --vp-button-brand-active-text: oklch(0.18 0.01 50);
+}
+
+/* ----- Layout polish ----------------------------------------------------- */
+
+/* Warm canvas behind the hero with a soft brand halo */
+.VPHome {
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      var(--vp-c-brand-soft),
+      transparent 60%
+    ),
+    var(--vp-c-bg);
+}
+
+/* Rounder, softer feature cards */
+.VPFeature {
+  border-radius: 16px;
+  border: 1px solid var(--vp-c-border);
+  background: var(--vp-c-bg-elv);
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--vp-c-text-1) 6%, transparent),
+    0 10px 30px -18px color-mix(in oklch, var(--vp-c-text-1) 20%, transparent);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-soft);
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 4px color-mix(in oklch, var(--vp-c-brand-1) 10%, transparent),
+    0 18px 42px -16px color-mix(in oklch, var(--vp-c-brand-1) 28%, transparent);
+}
+
+/* Sidebar — slightly warmer surface, subtle active pill */
+.VPSidebar {
+  background: var(--vp-c-bg-alt);
+  border-right: 1px solid var(--vp-c-divider);
+}
+.VPSidebarItem.is-active > .item .link .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+.VPSidebarItem.level-1 > .item > .indicator {
+  background-color: var(--vp-c-brand-1);
+}
+
+/* Nav — flatter, no harsh divider */
+.VPNav {
+  background: color-mix(in oklch, var(--vp-c-bg) 92%, transparent);
+  backdrop-filter: saturate(160%) blur(12px);
+}
+
+/* Doc content — generous spacing, rounded code blocks */
+.vp-doc div[class*='language-'] {
+  border-radius: 12px;
+  border: 1px solid var(--vp-c-divider);
+}
+.vp-doc :not(pre) > code {
+  border-radius: 6px;
+  background: var(--vp-c-bg-alt);
+  padding: 0.15em 0.45em;
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+/* Tables, blockquotes, custom blocks share the rounded language */
+.vp-doc table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+.vp-doc .custom-block {
+  border-radius: 10px;
+}
+
+/* Hero title — give it weight to match the console's headline style */
+.VPHero .name {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.VPHero .text {
+  color: var(--vp-c-text-1);
+  font-weight: 700;
+}
+.VPHero .tagline {
+  color: var(--vp-c-text-2);
+}
+
+/* Search box and the cmd-K affordance */
+.VPNavBarSearch .DocSearch-Button {
+  border-radius: 10px;
+  background: var(--vp-c-bg-alt);
+  border: 1px solid var(--vp-c-border);
+}
+.VPLocalSearchBox {
+  border-radius: 14px;
+}
+
+/* ----- Reusable step list (use in any .md) -------------------------------
+ * Wrap a manual ordered list in <div class="steps"> ... </div> and the
+ * numbers become brand-colored pill badges. Useful for quickstart pages. */
+.vp-doc .steps {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+}
+.vp-doc .steps > ol {
+  counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+}
+.vp-doc .steps > ol > li {
+  position: relative;
+  padding: 1rem 1.25rem 1rem 3.25rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  background: var(--vp-c-bg-elv);
+}
+.vp-doc .steps > ol > li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
