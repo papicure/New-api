@@ -11,12 +11,19 @@ const sidebars = require('../.vitepress-sidebar.json') as {
 export default defineConfig({
   base: '/docs/',
   title: 'PaPiCode Docs',
+  titleTemplate: false,
   description:
     'PaPiCode 文档中心：AI API 中转、Token 额度、订阅套餐、客户端接入与常见问题。',
   lastUpdated: true,
   cleanUrls: true,
   srcExclude: ['_scrape/**', 'README.md'],
   appearance: 'dark',
+  // Keep the browser tab title fixed instead of following the open page.
+  transformPageData(pageData) {
+    pageData.title = 'PaPiCode Docs'
+    pageData.titleTemplate = false
+    return pageData
+  },
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/docs/logo.svg' }],
   ],
