@@ -1,0 +1,5 @@
+node_modules/
+.vitepress/dist/
+.vitepress/cache/
+_scrape/node_modules/
+_scrape/app.js

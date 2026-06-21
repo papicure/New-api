@@ -1,0 +1,246 @@
+{
+  "zh": [
+    {
+      "text": "开始使用",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "产品介绍",
+          "link": "/guide/basics/introduction"
+        },
+        {
+          "text": "快速开始",
+          "link": "/guide/quickstart"
+        },
+        {
+          "text": "创建 API Key",
+          "link": "/guide/api-key"
+        },
+        {
+          "text": "模型与价格",
+          "link": "/guide/models-pricing"
+        },
+        {
+          "text": "计费与额度",
+          "link": "/guide/billing"
+        }
+      ]
+    },
+    {
+      "text": "工具接入",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "OpenAI Compatible",
+          "link": "/guide/clients/openai-compatible"
+        },
+        {
+          "text": "Cursor",
+          "link": "/guide/clients/cursor"
+        },
+        {
+          "text": "Claude Code",
+          "link": "/guide/clients/claude-code"
+        },
+        {
+          "text": "Codex CLI",
+          "link": "/guide/clients/codex-cli"
+        },
+        {
+          "text": "Cherry Studio",
+          "link": "/guide/clients/cherry-studio"
+        },
+        {
+          "text": "Chatbox",
+          "link": "/guide/clients/chatbox"
+        },
+        {
+          "text": "Open WebUI",
+          "link": "/guide/clients/open-webui"
+        },
+        {
+          "text": "CodeBuddy",
+          "link": "/guide/clients/codebuddy"
+        },
+        {
+          "text": "Trae",
+          "link": "/guide/clients/trae"
+        },
+        {
+          "text": "CC Switch",
+          "link": "/guide/clients/cc-switch"
+        },
+        {
+          "text": "LangChain / SDK",
+          "link": "/guide/clients/sdk"
+        }
+      ]
+    },
+    {
+      "text": "账户与订阅",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "充值与兑换码",
+          "link": "/guide/account/redeem"
+        },
+        {
+          "text": "订阅套餐",
+          "link": "/guide/account/subscriptions"
+        },
+        {
+          "text": "分组与线路",
+          "link": "/guide/account/groups"
+        },
+        {
+          "text": "用量与日志",
+          "link": "/guide/account/usage"
+        }
+      ]
+    },
+    {
+      "text": "更多",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "常见问题",
+          "link": "/faq"
+        },
+        {
+          "text": "故障排查",
+          "link": "/troubleshooting"
+        },
+        {
+          "text": "服务条款",
+          "link": "/legal/terms"
+        },
+        {
+          "text": "隐私政策",
+          "link": "/legal/privacy"
+        }
+      ]
+    }
+  ],
+  "en": [
+    {
+      "text": "Get Started",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "Introduction",
+          "link": "/en/guide/basics/introduction"
+        },
+        {
+          "text": "Quickstart",
+          "link": "/en/guide/quickstart"
+        },
+        {
+          "text": "Create API Keys",
+          "link": "/en/guide/api-key"
+        },
+        {
+          "text": "Models & Pricing",
+          "link": "/en/guide/models-pricing"
+        },
+        {
+          "text": "Billing & Credits",
+          "link": "/en/guide/billing"
+        }
+      ]
+    },
+    {
+      "text": "Tool Integrations",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "OpenAI Compatible",
+          "link": "/en/guide/clients/openai-compatible"
+        },
+        {
+          "text": "Cursor",
+          "link": "/en/guide/clients/cursor"
+        },
+        {
+          "text": "Claude Code",
+          "link": "/en/guide/clients/claude-code"
+        },
+        {
+          "text": "Codex CLI",
+          "link": "/en/guide/clients/codex-cli"
+        },
+        {
+          "text": "Cherry Studio",
+          "link": "/en/guide/clients/cherry-studio"
+        },
+        {
+          "text": "Chatbox",
+          "link": "/en/guide/clients/chatbox"
+        },
+        {
+          "text": "Open WebUI",
+          "link": "/en/guide/clients/open-webui"
+        },
+        {
+          "text": "CodeBuddy",
+          "link": "/en/guide/clients/codebuddy"
+        },
+        {
+          "text": "Trae",
+          "link": "/en/guide/clients/trae"
+        },
+        {
+          "text": "CC Switch",
+          "link": "/en/guide/clients/cc-switch"
+        },
+        {
+          "text": "LangChain / SDK",
+          "link": "/en/guide/clients/sdk"
+        }
+      ]
+    },
+    {
+      "text": "Account & Plans",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "Redeem Codes",
+          "link": "/en/guide/account/redeem"
+        },
+        {
+          "text": "Subscriptions",
+          "link": "/en/guide/account/subscriptions"
+        },
+        {
+          "text": "Groups & Routes",
+          "link": "/en/guide/account/groups"
+        },
+        {
+          "text": "Usage & Logs",
+          "link": "/en/guide/account/usage"
+        }
+      ]
+    },
+    {
+      "text": "More",
+      "collapsed": false,
+      "items": [
+        {
+          "text": "FAQ",
+          "link": "/en/faq"
+        },
+        {
+          "text": "Troubleshooting",
+          "link": "/en/troubleshooting"
+        },
+        {
+          "text": "Terms",
+          "link": "/en/legal/terms"
+        },
+        {
+          "text": "Privacy",
+          "link": "/en/legal/privacy"
+        }
+      ]
+    }
+  ]
+}

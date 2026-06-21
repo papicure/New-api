@@ -1,0 +1,238 @@
+{
+  "zh": [
+    {
+      "title": "开始使用",
+      "items": [
+        [
+          "产品介绍",
+          "/zh/guide/basics/introduction"
+        ],
+        [
+          "快速开始",
+          "/zh/guide/quickstart"
+        ],
+        [
+          "创建 API Key",
+          "/zh/guide/api-key"
+        ],
+        [
+          "模型与价格",
+          "/zh/guide/models-pricing"
+        ],
+        [
+          "计费与额度",
+          "/zh/guide/billing"
+        ]
+      ]
+    },
+    {
+      "title": "工具接入",
+      "items": [
+        [
+          "OpenAI Compatible",
+          "/zh/guide/clients/openai-compatible"
+        ],
+        [
+          "Cursor",
+          "/zh/guide/clients/cursor"
+        ],
+        [
+          "Claude Code",
+          "/zh/guide/clients/claude-code"
+        ],
+        [
+          "Codex CLI",
+          "/zh/guide/clients/codex-cli"
+        ],
+        [
+          "Cherry Studio",
+          "/zh/guide/clients/cherry-studio"
+        ],
+        [
+          "Chatbox",
+          "/zh/guide/clients/chatbox"
+        ],
+        [
+          "Open WebUI",
+          "/zh/guide/clients/open-webui"
+        ],
+        [
+          "CodeBuddy",
+          "/zh/guide/clients/codebuddy"
+        ],
+        [
+          "Trae",
+          "/zh/guide/clients/trae"
+        ],
+        [
+          "CC Switch",
+          "/zh/guide/clients/cc-switch"
+        ],
+        [
+          "LangChain / SDK",
+          "/zh/guide/clients/sdk"
+        ]
+      ]
+    },
+    {
+      "title": "账户与订阅",
+      "items": [
+        [
+          "充值与兑换码",
+          "/zh/guide/account/redeem"
+        ],
+        [
+          "订阅套餐",
+          "/zh/guide/account/subscriptions"
+        ],
+        [
+          "分组与线路",
+          "/zh/guide/account/groups"
+        ],
+        [
+          "用量与日志",
+          "/zh/guide/account/usage"
+        ]
+      ]
+    },
+    {
+      "title": "更多",
+      "items": [
+        [
+          "常见问题",
+          "/zh/faq"
+        ],
+        [
+          "故障排查",
+          "/zh/troubleshooting"
+        ],
+        [
+          "服务条款",
+          "/zh/legal/terms"
+        ],
+        [
+          "隐私政策",
+          "/zh/legal/privacy"
+        ]
+      ]
+    }
+  ],
+  "en": [
+    {
+      "title": "Get Started",
+      "items": [
+        [
+          "Introduction",
+          "/en/guide/basics/introduction"
+        ],
+        [
+          "Quickstart",
+          "/en/guide/quickstart"
+        ],
+        [
+          "Create API Keys",
+          "/en/guide/api-key"
+        ],
+        [
+          "Models & Pricing",
+          "/en/guide/models-pricing"
+        ],
+        [
+          "Billing & Credits",
+          "/en/guide/billing"
+        ]
+      ]
+    },
+    {
+      "title": "Tool Integrations",
+      "items": [
+        [
+          "OpenAI Compatible",
+          "/en/guide/clients/openai-compatible"
+        ],
+        [
+          "Cursor",
+          "/en/guide/clients/cursor"
+        ],
+        [
+          "Claude Code",
+          "/en/guide/clients/claude-code"
+        ],
+        [
+          "Codex CLI",
+          "/en/guide/clients/codex-cli"
+        ],
+        [
+          "Cherry Studio",
+          "/en/guide/clients/cherry-studio"
+        ],
+        [
+          "Chatbox",
+          "/en/guide/clients/chatbox"
+        ],
+        [
+          "Open WebUI",
+          "/en/guide/clients/open-webui"
+        ],
+        [
+          "CodeBuddy",
+          "/en/guide/clients/codebuddy"
+        ],
+        [
+          "Trae",
+          "/en/guide/clients/trae"
+        ],
+        [
+          "CC Switch",
+          "/en/guide/clients/cc-switch"
+        ],
+        [
+          "LangChain / SDK",
+          "/en/guide/clients/sdk"
+        ]
+      ]
+    },
+    {
+      "title": "Account & Plans",
+      "items": [
+        [
+          "Redeem Codes",
+          "/en/guide/account/redeem"
+        ],
+        [
+          "Subscriptions",
+          "/en/guide/account/subscriptions"
+        ],
+        [
+          "Groups & Routes",
+          "/en/guide/account/groups"
+        ],
+        [
+          "Usage & Logs",
+          "/en/guide/account/usage"
+        ]
+      ]
+    },
+    {
+      "title": "More",
+      "items": [
+        [
+          "FAQ",
+          "/en/faq"
+        ],
+        [
+          "Troubleshooting",
+          "/en/troubleshooting"
+        ],
+        [
+          "Terms",
+          "/en/legal/terms"
+        ],
+        [
+          "Privacy",
+          "/en/legal/privacy"
+        ]
+      ]
+    }
+  ]
+}
