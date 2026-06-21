@@ -2,6 +2,8 @@
 title: "隐私政策"
 ---
 
+<PageBadge variant="success">法律</PageBadge>
+
 # 隐私政策
 
 > 我们重视账户、密钥和使用数据的安全。

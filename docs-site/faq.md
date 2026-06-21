@@ -2,6 +2,8 @@
 title: "常见问题"
 ---
 
+<PageBadge variant="info">FAQ</PageBadge>
+
 # 常见问题
 
 > 这里整理 PaPiCode 使用过程中最常见的问题。

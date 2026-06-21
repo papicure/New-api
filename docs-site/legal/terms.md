@@ -2,6 +2,8 @@
 title: "服务条款"
 ---
 
+<PageBadge variant="success">法律</PageBadge>
+
 # 服务条款
 
 > 使用 PaPiCode 前，请确认您已阅读并同意服务条款。

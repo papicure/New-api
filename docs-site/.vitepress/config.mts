@@ -20,6 +20,8 @@ export default defineConfig({
   head: [['link', { rel: 'icon', href: '/docs/favicon.ico' }]],
 
   themeConfig: {
+    logo: { src: '/logo.svg', alt: 'PaPiCode', width: 28, height: 28 },
+    siteTitle: 'PaPiCode',
     search: { provider: 'local' },
     socialLinks: [],
   },

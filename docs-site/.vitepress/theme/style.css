@@ -257,3 +257,71 @@
   align-items: center;
   justify-content: center;
 }
+
+/* ----- Doc-page hero CTA row (intro page only) --------------------------- */
+.vp-doc .pp-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1.25rem 0 2rem;
+  flex-wrap: wrap;
+}
+.vp-doc .pp-hero-actions p { margin: 0; }
+.vp-doc .pp-btn-primary,
+.vp-doc .pp-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+.vp-doc .pp-btn-primary {
+  background: var(--vp-c-brand-1);
+  color: var(--vp-button-brand-text) !important;
+  border: 1px solid transparent;
+}
+.vp-doc .pp-btn-primary:hover {
+  background: var(--vp-c-brand-2);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px -10px color-mix(in oklch, var(--vp-c-brand-1) 60%, transparent);
+}
+.vp-doc .pp-btn-secondary {
+  background: var(--vp-c-bg-elv);
+  color: var(--vp-c-text-1) !important;
+  border: 1px solid var(--vp-c-border);
+}
+.vp-doc .pp-btn-secondary:hover {
+  border-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1) !important;
+}
+
+/* ----- Sidebar / nav brand logo polish ----------------------------------- */
+.VPNavBarTitle .logo {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(
+    0 2px 8px color-mix(in oklch, var(--vp-c-brand-1) 35%, transparent)
+  );
+}
+.VPNavBarTitle .title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+/* Add a subtle "Docs" eyebrow next to the brand title */
+.VPNavBarTitle .title::after {
+  content: 'Docs';
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 6px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  border: 1px solid color-mix(in oklch, var(--vp-c-brand-1) 30%, transparent);
+  vertical-align: middle;
+}
