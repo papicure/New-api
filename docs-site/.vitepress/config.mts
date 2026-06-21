@@ -17,7 +17,9 @@ export default defineConfig({
   cleanUrls: true,
   srcExclude: ['_scrape/**', 'README.md'],
   appearance: 'dark',
-  head: [['link', { rel: 'icon', href: '/docs/favicon.ico' }]],
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/docs/logo.svg' }],
+  ],
 
   themeConfig: {
     siteTitle: 'PaPiCode',
