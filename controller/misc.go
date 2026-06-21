@@ -180,9 +180,15 @@ func GetStatus(c *gin.Context) {
 // valid challenge/seccode can be produced.
 func GeetestRegister(c *gin.Context) {
 	if !common.GeetestCheckEnabled {
+		// Disabled is not an error: return success=true with success:0 so the
+		// global axios interceptor does not surface a toast. The widget simply
+		// stays unrendered.
 		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": "极验校验未启用",
+			"success": true,
+			"message": "",
+			"data": gin.H{
+				"success": 0,
+			},
 		})
 		return
 	}

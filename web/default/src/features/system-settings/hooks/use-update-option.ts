@@ -37,6 +37,11 @@ const STATUS_RELATED_KEYS = [
   'general_setting.quota_display_type',
   'general_setting.custom_currency_symbol',
   'general_setting.custom_currency_exchange_rate',
+  // Captcha toggles surface through GetStatus; invalidate so enabling/disabling
+  // a provider takes effect immediately instead of after the 5-min staleTime.
+  'TurnstileCheckEnabled',
+  'RecaptchaCheckEnabled',
+  'GeetestCheckEnabled',
 ]
 
 export function useUpdateOption() {

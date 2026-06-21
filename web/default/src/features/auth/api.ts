@@ -131,10 +131,15 @@ export interface GeetestRegisterData {
   new_captcha: number
 }
 
-// Fetch a per-session Geetest challenge before rendering the widget
+// Fetch a per-session Geetest challenge before rendering the widget.
+// skipBusinessError keeps the global interceptor from toasting when the backend
+// reports the captcha as disabled (success:true, data.success:0).
 export async function getGeetestRegister(): Promise<GeetestRegisterData | null> {
-  const res = await api.get('/api/geetest/register')
-  if (res.data?.success) return res.data.data as GeetestRegisterData
+  const res = await api.get('/api/geetest/register', {
+    skipBusinessError: true,
+  })
+  const data = res.data?.data as GeetestRegisterData | undefined
+  if (res.data?.success && data?.success === 1) return data
   return null
 }
 
