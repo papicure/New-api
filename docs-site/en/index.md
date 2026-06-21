@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: PaPiCode
-  text: AI connectivity, powered by token credits
-  tagline: A unified AI API gateway — one API Key for Cursor, Claude Code, Codex CLI and many more clients.
+  text: One API Key for every AI
+  tagline: A unified AI API gateway. Aggregate leading models, pay by token credits, and plug into Cursor, Claude Code, Codex CLI and many more clients out of the box.
   actions:
     - theme: brand
       text: Quickstart

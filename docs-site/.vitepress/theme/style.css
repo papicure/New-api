@@ -204,9 +204,16 @@
 .VPHero .text {
   color: var(--vp-c-text-1);
   font-weight: 700;
+  line-height: 1.15;
+  max-width: 18ch;
 }
 .VPHero .tagline {
   color: var(--vp-c-text-2);
+  line-height: 1.6;
+  max-width: 42ch;
+}
+@media (min-width: 960px) {
+  .VPHero .text { max-width: none; }
 }
 
 /* Search box and the cmd-K affordance */
@@ -298,25 +305,13 @@
   color: var(--vp-c-brand-1) !important;
 }
 
-/* ----- Brand title polish (no separate logo element) --------------------- */
-/* Sparkle mark rendered as a ::before icon on the site title so the layout
- * stays compact — no <img> tag, no extra HTTP request. */
+/* ----- Brand title polish ------------------------------------------------ */
 .VPNavBarTitle .title {
   display: inline-flex;
   align-items: center;
   font-weight: 700;
+  font-size: 1.15rem;
   letter-spacing: -0.01em;
-}
-.VPNavBarTitle .title::before {
-  content: '';
-  display: inline-block;
-  width: 1.1em;
-  height: 1.1em;
-  margin-right: 0.5rem;
-  background: url('/docs/logo.svg') center/contain no-repeat;
-  filter: drop-shadow(
-    0 2px 6px color-mix(in oklch, var(--vp-c-brand-1) 35%, transparent)
-  );
 }
 /* Add a subtle "Docs" eyebrow next to the brand title */
 .VPNavBarTitle .title::after {

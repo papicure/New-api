@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: PaPiCode
-  text: AI 连接一切，Token 赋能未来
-  tagline: 统一的 AI API 网关 —— 一个 API Key，接入 Cursor、Claude Code、Codex CLI 等众多客户端。
+  text: 一个 API Key，连接所有 AI
+  tagline: 统一的 AI API 网关。聚合主流大模型，按 Token 额度计费，在 Cursor、Claude Code、Codex CLI 等众多客户端中即开即用。
   actions:
     - theme: brand
       text: 快速开始
