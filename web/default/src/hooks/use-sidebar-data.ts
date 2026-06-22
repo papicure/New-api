@@ -24,6 +24,7 @@ import {
   CreditCard,
   FileText,
   FlaskConical,
+  ImageIcon,
   Key,
   LayoutDashboard,
   ListTodo,
@@ -75,6 +76,13 @@ export function useSidebarData(): SidebarData {
             title: t('Playground'),
             url: '/playground',
             icon: FlaskConical,
+          },
+          {
+            title: t('AI Image Lab'),
+            url: 'https://canvas.papicure.de/',
+            icon: ImageIcon,
+            external: true,
+            configUrls: ['https://canvas.papicure.de/'],
           },
           {
             title: t('Chat'),

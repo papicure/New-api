@@ -66,6 +66,11 @@ export function SidebarModulesCard() {
           description: t('AI model testing environment'),
         },
         {
+          key: 'canvas',
+          title: t('AI Image Lab'),
+          description: t('Open the dedicated image generation workspace.'),
+        },
+        {
           key: 'chat',
           title: t('Chat'),
           description: t('Chat session management'),
