@@ -67,7 +67,7 @@ export function SidebarModulesCard() {
         },
         {
           key: 'canvas',
-          title: t('AI Image Lab'),
+          title: t('AI Image Processing'),
           description: t('Open the dedicated image generation workspace.'),
         },
         {

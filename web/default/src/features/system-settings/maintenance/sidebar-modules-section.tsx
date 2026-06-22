@@ -91,7 +91,7 @@ export function SidebarModulesSection({
         description: t('Experiment with prompts and models in real time.'),
       },
       canvas: {
-        title: t('AI Image Lab'),
+        title: t('AI Image Processing'),
         description: t('Open the dedicated image generation workspace.'),
       },
       chat: {

@@ -78,11 +78,9 @@ export function useSidebarData(): SidebarData {
             icon: FlaskConical,
           },
           {
-            title: t('AI Image Lab'),
-            url: 'https://canvas.papicure.de/',
+            title: t('AI Image Processing'),
+            url: '/canvas',
             icon: ImageIcon,
-            external: true,
-            configUrls: ['https://canvas.papicure.de/'],
           },
           {
             title: t('Chat'),
